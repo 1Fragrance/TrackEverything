@@ -62,10 +62,22 @@
     <Folder Include="TrackEverything\client\" />
     <Folder Include="TrackEverything\admin\" />
     <Folder Include="TrackEverything\static\" />
+    <Folder Include="TrackEverything\static\css\" />
+    <Folder Include="TrackEverything\static\img\" />
     <Folder Include="TrackEverything\templates\" />
+    <Folder Include="TrackEverything\templates\client\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="TrackEverything\static\css\style.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="TrackEverything\templates\base.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="TrackEverything\templates\client\index.html">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
