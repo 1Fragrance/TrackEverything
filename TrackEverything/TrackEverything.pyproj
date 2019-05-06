@@ -29,7 +29,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="runserver.py" />
+    <Compile Include="config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TrackEverything\core\core.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="instance\config.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TrackEverything\models.py">
@@ -50,6 +56,7 @@
   <ItemGroup>
     <Folder Include="TrackEverything\" />
     <Folder Include="TrackEverything\core\" />
+    <Folder Include="instance\" />
     <Folder Include="TrackEverything\repositories\" />
     <Folder Include="TrackEverything\static\" />
     <Folder Include="TrackEverything\static\content\" />

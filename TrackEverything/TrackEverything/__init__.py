@@ -3,14 +3,26 @@ from flask import Flask, render_template,request,redirect,url_for
 from bson import ObjectId
 from pymongo import MongoClient
 from TrackEverything.models import db, Project, Task, Employee
+from config import app_config
 
-app = Flask(__name__)
+db = MongoEngine()
+login_manager = LoginManager()
 
-## include db name in URI; _HOST entry overwrites all others
-app.config['MONGODB_HOST'] = 'mongodb://localhost:27017/sivji-sandbox'
-app.debug = True
+def create_app(config_name):
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object(app_config[config_name])
+    app.config.from_pyfile('config.py')
+    db.init_app(app)
 
-db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_message = "You must be logged in to access this page."
+    login_manager.login_view = "auth.login"
+
+    @app.route('/')
+    def hello_world():
+        return 'Hello, World!'
+
+    return app
 
 import TrackEverything.views
 

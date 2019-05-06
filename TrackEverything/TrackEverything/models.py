@@ -1,7 +1,7 @@
 from flask_mongoengine import MongoEngine
 from datetime import datetime
+from TrackEverything import db
 
-db = MongoEngine()
 
 # Employee positions
 POSITION_CHOICES = (
