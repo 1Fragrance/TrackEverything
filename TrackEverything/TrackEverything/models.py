@@ -28,14 +28,15 @@ STATUS_CHOICES = (
 class User(UserMixin, db.Document):
     firstname = db.StringField(max_length=255, required=True)
     lastname = db.StringField(max_length=255, required=True)
-    patronymic = db.StringField(max_length=255, required=False)
+    patronymic = db.StringField(max_length=255)
+    username = db.StringField(max_length=255, required=True, unique=True)
     position = db.StringField(choices=POSITION_CHOICES, required=True)
     tasks = db.ListField(db.ReferenceField('Task'))
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
     # Auth
-    email = db.EmailField(required=True)
+    email = db.EmailField(required=True, unique=True)
     hash_password = db.StringField()
 
     meta = {
@@ -58,7 +59,7 @@ class User(UserMixin, db.Document):
 
 # Task model
 class Task(db.Document):
-    name = db.StringField(max_length=255, required=True)
+    name = db.StringField(max_length=255, required=True, unique=True)
     description = db.StringField()
     status = db.StringField(choices=STATUS_CHOICES)
     performers = db.ListField(db.ReferenceField('User'))
@@ -76,8 +77,8 @@ class Task(db.Document):
 
 # Project model
 class Project(db.Document):
-    name = db.StringField(max_length=255, required=True)
-    shortname = db.StringField(max_length=255, required=True)
+    name = db.StringField(max_length=255, required=True, unique=True)
+    shortname = db.StringField(max_length=255, required=True, unique=True)
     description = db.StringField()
     status = db.StringField(choices=STATUS_CHOICES, required=True)
     tasks = db.ListField(db.ReferenceField('Task'))

@@ -35,14 +35,23 @@
     <Compile Include="instance\config.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TrackEverything\admin\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TrackEverything\admin\views.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TrackEverything\admin\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TrackEverything\auth\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TrackEverything\auth\views.py" />
     <Compile Include="TrackEverything\auth\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TrackEverything\client\forms.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TrackEverything\client\views.py" />
