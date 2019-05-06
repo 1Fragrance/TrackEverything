@@ -32,22 +32,24 @@
     <Compile Include="config.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TrackEverything\core\core.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="instance\config.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TrackEverything\admin\views.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TrackEverything\admin\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TrackEverything\auth\views.py" />
+    <Compile Include="TrackEverything\auth\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TrackEverything\client\views.py" />
+    <Compile Include="TrackEverything\client\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TrackEverything\models.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TrackEverything\repositories\employee_repository.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TrackEverything\repositories\project_repository.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TrackEverything\repositories\task_repository.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TrackEverything\__init__.py" />
@@ -55,43 +57,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TrackEverything\" />
-    <Folder Include="TrackEverything\core\" />
     <Folder Include="instance\" />
-    <Folder Include="TrackEverything\repositories\" />
+    <Folder Include="TrackEverything\auth\" />
+    <Folder Include="TrackEverything\client\" />
+    <Folder Include="TrackEverything\admin\" />
     <Folder Include="TrackEverything\static\" />
-    <Folder Include="TrackEverything\static\content\" />
-    <Folder Include="TrackEverything\static\fonts\" />
-    <Folder Include="TrackEverything\static\scripts\" />
     <Folder Include="TrackEverything\templates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="TrackEverything\static\content\bootstrap.css" />
-    <Content Include="TrackEverything\static\content\bootstrap.min.css" />
-    <Content Include="TrackEverything\static\content\site.css" />
-    <Content Include="TrackEverything\static\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="TrackEverything\static\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="TrackEverything\static\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="TrackEverything\static\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="TrackEverything\static\scripts\bootstrap.js" />
-    <Content Include="TrackEverything\static\scripts\bootstrap.min.js" />
-    <Content Include="TrackEverything\static\scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="TrackEverything\static\scripts\jquery-1.10.2.js" />
-    <Content Include="TrackEverything\static\scripts\jquery-1.10.2.min.js" />
-    <Content Include="TrackEverything\static\scripts\jquery-1.10.2.min.map" />
-    <Content Include="TrackEverything\static\scripts\jquery.validate-vsdoc.js" />
-    <Content Include="TrackEverything\static\scripts\jquery.validate.js" />
-    <Content Include="TrackEverything\static\scripts\jquery.validate.min.js" />
-    <Content Include="TrackEverything\static\scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="TrackEverything\static\scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="TrackEverything\static\scripts\modernizr-2.6.2.js" />
-    <Content Include="TrackEverything\static\scripts\respond.js" />
-    <Content Include="TrackEverything\static\scripts\respond.min.js" />
-    <Content Include="TrackEverything\static\scripts\_references.js" />
-    <Content Include="TrackEverything\templates\about.html" />
-    <Content Include="TrackEverything\templates\contact.html" />
-    <Content Include="TrackEverything\templates\index.html" />
-    <Content Include="TrackEverything\templates\layout.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

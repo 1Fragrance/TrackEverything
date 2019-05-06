@@ -1,9 +1,7 @@
-import os
-from flask import Flask, render_template,request,redirect,url_for
-from bson import ObjectId
-from pymongo import MongoClient
-from TrackEverything.models import db, Project, Task, Employee
+from flask import Flask
 from config import app_config
+from flask_mongoengine import MongoEngine
+from flask_login import LoginManager
 
 db = MongoEngine()
 login_manager = LoginManager()
@@ -24,5 +22,4 @@ def create_app(config_name):
 
     return app
 
-import TrackEverything.views
 
