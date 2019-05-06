@@ -1,10 +1,11 @@
 from flask_mongoengine import MongoEngine
+from datetime import datetime
 
 db = MongoEngine()
 
 # Employee positions
 POSITION_CHOICES = (
-    (0, 'None')
+    (0, 'None'),
     (1, 'Junior developer'),
     (2, 'Regular developer'),
     (3, 'Senior developer'),
@@ -30,10 +31,10 @@ class Employee(db.Document):
     patronymic = db.StringField(max_length=255, required=False)
     email = db.EmailField(required=True)
     position = db.StringField(choices=POSITION_CHOICES, required=True)
-    tasks = db.ListField(ReferenceField(Task))
+    tasks = db.ListField(db.ReferenceField('Task'))
 
-    create_date = db.DateTimeField(default=datetime.datetime.utcnow, required=True)
-    update_date = db.DateTimeField(default=datetime.datetime.utcnow, required=True)
+    create_date = db.DateTimeField(default=datetime.utcnow, required=True)
+    update_date = db.DateTimeField(default=datetime.utcnow, required=True)
     
     meta = {
         'collection': 'employees',
@@ -45,13 +46,13 @@ class Task(db.Document):
     name = db.StringField(max_length=255, required=True)
     description = db.StringField()
     status = db.StringField(choices=STATUS_CHOICES)
-    performers = db.ListField(ReferenceField(Employee))
-    project = db.ReferenceField(Project)
+    performers = db.ListField(db.ReferenceField('Employee'))
+    project = db.ReferenceField('Project')
 
     start_date = db.DateTimeField()
     end_date = db.DateTimeField()
-    create_date = db.DateTimeField(default=datetime.datetime.utcnow, required=True)
-    update_date = db.DateTimeField(default=datetime.datetime.utcnow, required=True)
+    create_date = db.DateTimeField(default=datetime.utcnow, required=True)
+    update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
     meta = {
         'collection': 'tasks',
@@ -64,10 +65,10 @@ class Project(db.Document):
     shortname = db.StringField(max_length=255, required=True)
     description = db.StringField()
     status = db.StringField(choices=STATUS_CHOICES, required=True)
-    tasks = db.ListField(ReferenceField(Task))
+    tasks = db.ListField(db.ReferenceField('Task'))
 
-    create_date = db.DateTimeField(default=datetime.datetime.utcnow, required=True)
-    update_date = db.DateTimeField(default=datetime.datetime.utcnow, required=True)
+    create_date = db.DateTimeField(default=datetime.utcnow, required=True)
+    update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
     meta = {
         'collection': 'projects',
