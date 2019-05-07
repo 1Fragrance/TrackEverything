@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user
 from . import auth
-from TrackEverything.auth.forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm
 from .. import db
 from ..models import User
 
@@ -18,6 +18,7 @@ def register():
                             username=form.username.data,
                             password=form.password.data)
 
+# TODO: REMOVE, not working
         db.session.add(user)
         db.session.commit()
         flash('You have successfully registered! You may now login.')
