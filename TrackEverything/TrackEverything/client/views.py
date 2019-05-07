@@ -12,4 +12,4 @@ def index():
 @client.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('сlient/dashboard.html', title="Dashboard")
+    return render_template('client/dashboard.html', title="Dashboard")

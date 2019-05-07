@@ -1,5 +1,5 @@
 from datetime import datetime
-from . import db
+from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -25,7 +25,7 @@ STATUS_CHOICES = (
 
 
 # Employee model
-class User(UserMixin, db.Document):
+class User(db.Document, UserMixin):
     first_name = db.StringField(max_length=255, required=True)
     last_name = db.StringField(max_length=255, required=True)
     patronymic = db.StringField(max_length=255)
@@ -58,6 +58,14 @@ class User(UserMixin, db.Document):
         'collection': 'users',
         'ordering': ['-update_date'],
         }
+
+# Override user loading
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.objects(pk=user_id).first()
+    if user:
+        return user
+    return None
 
 
 # Task model
