@@ -1,13 +1,14 @@
-"""
-This script runs the TrackEverything application using a development server.
-"""
-
-import os
 from TrackEverything import create_app
 from os import environ
+'''
+Should exec:
+    export FLASK_CONFIG=development && export FLASK_APP=run.py
+Then:
+    import os
+    config_name = os.getenv('FLASK_CONFIG')
+    app = create_app(config_name)
+'''
 
-# Should exec: export FLASK_CONFIG=development && export FLASK_APP=run.py
-# config_name = os.getenv('FLASK_CONFIG')
 app = create_app('development')
 
 if __name__ == '__main__':

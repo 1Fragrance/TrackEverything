@@ -1,5 +1,5 @@
 from datetime import datetime
-from TrackEverything import db
+from . import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -26,11 +26,11 @@ STATUS_CHOICES = (
 
 # Employee model
 class User(UserMixin, db.Document):
-    firstname = db.StringField(max_length=255, required=True)
-    lastname = db.StringField(max_length=255, required=True)
+    first_name = db.StringField(max_length=255, required=True)
+    last_name = db.StringField(max_length=255, required=True)
     patronymic = db.StringField(max_length=255)
     username = db.StringField(max_length=255, required=True, unique=True)
-    position = db.StringField(choices=POSITION_CHOICES, required=True)
+    position = db.IntField(choices=POSITION_CHOICES, required=True)
     tasks = db.ListField(db.ReferenceField('Task'))
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
@@ -39,11 +39,6 @@ class User(UserMixin, db.Document):
     email = db.EmailField(required=True, unique=True)
     hash_password = db.StringField()
 
-    meta = {
-        'collection': 'users',
-        'ordering': ['-update_date'],
-        }
-
     # Non-readable property
     @property
     def password(self):
@@ -51,10 +46,18 @@ class User(UserMixin, db.Document):
 
     @password.setter
     def password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.hash_password = generate_password_hash(password)
 
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.hash_password, password)
+
+    def __init__(self, *args, **kwargs):
+        db.Document.__init__(self, *args, **kwargs)
+
+    meta = {
+        'collection': 'users',
+        'ordering': ['-update_date'],
+        }
 
 
 # Task model
@@ -70,6 +73,9 @@ class Task(db.Document):
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
+    def __init__(self, *args, **kwargs):
+        db.Document.__init__(self, *args, **kwargs)
+
     meta = {
         'collection': 'tasks',
         'ordering': ['-update_date'],
@@ -79,13 +85,16 @@ class Task(db.Document):
 # Project model
 class Project(db.Document):
     name = db.StringField(max_length=255, required=True, unique=True)
-    shortname = db.StringField(max_length=255, required=True, unique=True)
+    short_name = db.StringField(max_length=255, required=True, unique=True)
     description = db.StringField()
     status = db.StringField(choices=STATUS_CHOICES, required=True)
     tasks = db.ListField(db.ReferenceField('Task'))
 
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
+
+    def __init__(self, *args, **kwargs):
+        db.Document.__init__(self, *args, **kwargs)
 
     meta = {
         'collection': 'projects',

@@ -1,8 +1,8 @@
 from flask import Flask
-from config import app_config
 from flask_mongoengine import MongoEngine
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
+from config import app_config
 
 db = MongoEngine()
 login_manager = LoginManager()

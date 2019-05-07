@@ -12,17 +12,15 @@ def register():
     # TODO: Add choice form
     if form.validate_on_submit():
         user = User(email=form.email.data,
-                            firstname=form.firstname.data,
-                            lastname=form.lastname.data,
-                            patronymic=form.patronymic.data,
-                            username=form.username.data,
-                            password=form.password.data)
+                    first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    patronymic=form.patronymic.data,
+                    username=form.username.data,
+                    position=form.position.data)
+        user.password = form.password.data
+        user.save()
 
-# TODO: REMOVE, not working
-        db.session.add(user)
-        db.session.commit()
         flash('You have successfully registered! You may now login.')
-
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form, title='Register')
