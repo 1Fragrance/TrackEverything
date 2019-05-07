@@ -9,7 +9,7 @@ POSITION_CHOICES = (
     (1, 'Junior developer'),
     (2, 'Regular developer'),
     (3, 'Senior developer'),
-    (4, 'Solution architector'),
+    (4, 'Solution architect'),
     (5, 'Business analyst'),
     (6, 'Project manager'),
     (7, 'Designer'),
@@ -74,6 +74,7 @@ class Task(db.Document):
         'collection': 'tasks',
         'ordering': ['-update_date'],
         }
+
 
 # Project model
 class Project(db.Document):
