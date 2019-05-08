@@ -1,22 +1,22 @@
 from . import admin
 from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
-from .forms import TaskForm
-from ..models import Task
+from .forms import TaskForm, ProjectForm
+from ..models import Task, Project
 
 
 def check_admin():
     if not current_user.is_admin:
         abort(403)
 
-
+# Admin dashboard endpoint
 @admin.route('/admin/dashboard')
 @login_required
 def dashboard():
     check_admin()
     return render_template('admin/dashboard.html', title="Dashboard")
 
-
+# Task API
 @admin.route('/tasks', methods=['GET', 'POST'])
 @login_required
 def list_tasks():
@@ -96,3 +96,82 @@ def delete_task(id):
     return redirect(url_for('admin.list_tasks'))
 
     return render_template(title="Delete Task")
+
+
+# Project API
+@admin.route('/projects')
+@login_required
+def list_projects():
+    check_admin()
+    projects = Project.objects.all()
+    return render_template('admin/projects/projects.html',
+                           projects=projects, title='Projects')
+
+
+@admin.route('/projects/add', methods=['GET', 'POST'])
+@login_required
+def add_project():
+    check_admin()
+
+    add_project = True
+    form = ProjectForm()
+    if form.validate_on_submit():
+        project = Project(name=form.name.data,
+                          short_name=form.short_name.data,
+                          description=form.description.data,
+                          status=form.status.data)
+        try:
+            project.save()
+            flash('You have successfully added a new project.')
+        except:
+            flash('Error: project already exists.')
+
+        return redirect(url_for('admin.list_projects'))
+
+    # load role template
+    return render_template('admin/projects/project.html', add_project=add_project,
+                           form=form, title='Add Project')
+
+
+@admin.route('/projects/edit/<string:id>', methods=['GET', 'POST'])
+@login_required
+def edit_project(id):
+    check_admin()
+    add_project = False
+
+    project = Project.objects(pk=id).first()
+    form = ProjectForm(obj=project)
+
+    if form.validate_on_submit():
+        project.name = form.name.data
+        project.short_name = form.short_name.data
+        project.description = form.description.data
+        project.status = form.status.data
+
+        project.save()
+        flash('You have successfully edited the project.')
+
+        # redirect to the roles page
+        return redirect(url_for('admin.list_projects'))
+
+    form.name.data = project.name
+    form.short_name.data = project.short_name
+    form.description.data = project.description
+    form.status.data = project.status
+
+    return render_template('admin/projects/project.html', add_project=add_project,
+                           form=form, title="Edit Project")
+
+
+@admin.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
+@login_required
+def delete_project(id):
+    check_admin()
+
+    project = Project.objects(pk=id).first()
+    project.delete()
+    flash('You have successfully deleted the project.')
+
+    return redirect(url_for('admin.list_projects'))
+
+    return render_template(title="Delete Project")
