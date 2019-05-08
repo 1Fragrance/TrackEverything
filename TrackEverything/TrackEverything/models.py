@@ -38,6 +38,7 @@ class User(db.Document, UserMixin):
     # Auth
     email = db.EmailField(required=True, unique=True)
     hash_password = db.StringField()
+    is_admin = db.BooleanField(default=False)
 
     # Non-readable property
     @property
@@ -72,7 +73,7 @@ def load_user(user_id):
 class Task(db.Document):
     name = db.StringField(max_length=255, required=True, unique=True)
     description = db.StringField()
-    status = db.StringField(choices=STATUS_CHOICES)
+    status = db.IntField(choices=STATUS_CHOICES)
     performers = db.ListField(db.ReferenceField('User'))
     project = db.ReferenceField('Project')
 
@@ -95,7 +96,7 @@ class Project(db.Document):
     name = db.StringField(max_length=255, required=True, unique=True)
     short_name = db.StringField(max_length=255, required=True, unique=True)
     description = db.StringField()
-    status = db.StringField(choices=STATUS_CHOICES, required=True)
+    status = db.IntField(choices=STATUS_CHOICES, required=True)
     tasks = db.ListField(db.ReferenceField('Task'))
 
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)

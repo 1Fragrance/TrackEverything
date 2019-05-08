@@ -1,6 +1,5 @@
-from flask import render_template
-from flask_login import login_required
-
+from flask import abort, render_template
+from flask_login import current_user, login_required
 from . import client
 
 
@@ -13,3 +12,5 @@ def index():
 @login_required
 def dashboard():
     return render_template('client/dashboard.html', title="Dashboard")
+
+

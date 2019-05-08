@@ -31,7 +31,10 @@ def login():
         user = User.objects(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user)
-            return redirect(url_for('client.dashboard'))
+            if user.is_admin:
+                return redirect(url_for('home.admin_dashboard'))
+            else:
+                return redirect(url_for('home.dashboard'))
         else:
             flash('Invalid email or password.')
 
