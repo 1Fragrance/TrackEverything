@@ -26,9 +26,7 @@
                     {% if current_user.is_authenticated %}
                         {% if current_user.is_admin %}
                             <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
-                            <li><a href="#">Departments</a></li>
-                            <li><a href="#">Roles</a></li>
-                            <li><a href="#">Employees</a></li>
+                            <li><a href="{{ url_for('admin.list_tasks') }}">Tasks</a></li>
                         {% else %}
                             <li><a href="{{ url_for('client.dashboard') }}">Dashboard</a></li>
                         {% endif %}

@@ -60,6 +60,7 @@ class User(db.Document, UserMixin):
         'ordering': ['-update_date'],
         }
 
+
 # Override user loading
 @login_manager.user_loader
 def load_user(user_id):

@@ -11,7 +11,7 @@ class RegistrationForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     patronymic = StringField('Patronymic')
-    position = SelectField(choices=POSITION_CHOICES, coerce=int, validators=[DataRequired()])
+    position = SelectField('Position', choices=POSITION_CHOICES, coerce=int, validators=[DataRequired()])
 
     password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm_password')])
     confirm_password = PasswordField('Confirm Password')
