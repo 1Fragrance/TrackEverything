@@ -28,6 +28,7 @@
                             <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
                             <li><a href="{{ url_for('admin.list_tasks') }}">Tasks</a></li>
                             <li><a href="{{ url_for('admin.list_projects') }}">Projects</a></li>
+                            <li><a href="{{ url_for('admin.list_users') }}">Users</a></li>
                         {% else %}
                             <li><a href="{{ url_for('client.dashboard') }}">Dashboard</a></li>
                         {% endif %}

@@ -1,8 +1,8 @@
 from . import admin
 from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
-from .forms import TaskForm, ProjectForm
-from ..models import Task, Project
+from .forms import TaskForm, ProjectForm, UserAssignForm
+from ..models import Task, Project, User
 
 
 def check_admin():
@@ -175,3 +175,39 @@ def delete_project(id):
     return redirect(url_for('admin.list_projects'))
 
     return render_template(title="Delete Project")
+
+
+# User API
+@admin.route('/users')
+@login_required
+def list_users():
+    check_admin()
+
+    users = User.objects.all()
+    return render_template('admin/users/users.html',
+                           users=users, title='Users')
+
+
+@admin.route('/users/assign/<string:id>', methods=['GET', 'POST'])
+@login_required
+def assign_user(id):
+
+    check_admin()
+    user = User.objects(pk=id).first()
+
+    if user.is_admin:
+        abort(403)
+
+    form = UserAssignForm(obj=user)
+    if form.validate_on_submit():
+        user.project = form.department.data
+        user.task = form.role.data
+        user.save()
+        flash('You have successfully assigned a project and tasks.')
+
+        # redirect to the roles page
+        return redirect(url_for('admin.list_users'))
+
+    return render_template('admin/users/user.html',
+                           user=user, form=form,
+                           title='Assign User')
