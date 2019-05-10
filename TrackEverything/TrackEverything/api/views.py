@@ -1,4 +1,4 @@
-from . import admin
+from . import api
 from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from .forms import TaskForm, ProjectForm, UserAssignForm
@@ -10,13 +10,15 @@ def check_admin():
         abort(403)
 
 
-@admin.route('/index', methods=['GET', 'POST'])
+@api.route('/')
 @login_required
 def index():
     return render_template('index.html', title="Index page")
 
+
+# Admin part
 # Task API
-@admin.route('/tasks', methods=['GET', 'POST'])
+@api.route('/tasks', methods=['GET', 'POST'])
 @login_required
 def list_tasks():
     check_admin()
@@ -26,7 +28,7 @@ def list_tasks():
                            tasks=tasks, title="Tasks")
 
 
-@admin.route('/tasks/add', methods=['GET', 'POST'])
+@api.route('/tasks/add', methods=['GET', 'POST'])
 @login_required
 def add_task():
     check_admin()
@@ -51,7 +53,7 @@ def add_task():
                            form=form, title="Add Task")
 
 
-@admin.route('/tasks/edit/<string:id>', methods=['GET', 'POST'])
+@api.route('/tasks/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_task(id):
     check_admin()
@@ -82,7 +84,7 @@ def edit_task(id):
                            task=task, title="Edit Task")
 
 
-@admin.route('/tasks/delete/<string:id>', methods=['GET', 'POST'])
+@api.route('/tasks/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
 def delete_task(id):
     check_admin()
@@ -98,7 +100,7 @@ def delete_task(id):
 
 
 # Project API
-@admin.route('/projects')
+@api.route('/projects')
 @login_required
 def list_projects():
     check_admin()
@@ -107,7 +109,7 @@ def list_projects():
                            projects=projects, title='Projects')
 
 
-@admin.route('/projects/add', methods=['GET', 'POST'])
+@api.route('/projects/add', methods=['GET', 'POST'])
 @login_required
 def add_project():
     check_admin()
@@ -132,7 +134,7 @@ def add_project():
                            form=form, title='Add Project')
 
 
-@admin.route('/projects/edit/<string:id>', methods=['GET', 'POST'])
+@api.route('/projects/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(id):
     check_admin()
@@ -162,7 +164,7 @@ def edit_project(id):
                            form=form, title="Edit Project")
 
 
-@admin.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
+@api.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
 def delete_project(id):
     check_admin()
@@ -177,7 +179,7 @@ def delete_project(id):
 
 
 # User API
-@admin.route('/users')
+@api.route('/users')
 @login_required
 def list_users():
     check_admin()
@@ -187,7 +189,7 @@ def list_users():
                            users=users, title='Users')
 
 
-@admin.route('/users/assign/<string:id>', methods=['GET', 'POST'])
+@api.route('/users/assign/<string:id>', methods=['GET', 'POST'])
 @login_required
 def assign_user(id):
 

@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Forbidden{% endblock %}
+
+{% block title %}
+    Forbidden
+{% endblock %}
+
 {% block body %}
 <div class="content-section">
   <div class="outer">
@@ -9,10 +13,10 @@
             <h1> 403 Error </h1>
             <h3> You do not have sufficient permissions to access this page. </h3>
             <hr class="intro-divider">
-            <a href="{{ url_for('client.index') }}" class="btn btn-default btn-lg">
-                <i class="fa fa-home"></i>
-                Home
-            </a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('index') }}" class="btn btn-default btn-lg">
+                <i class="fa fa-home"></i>Home</a>
+             {% endif %}
         </div>
       </div>
     </div>

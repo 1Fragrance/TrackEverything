@@ -23,6 +23,12 @@ STATUS_CHOICES = (
     (2, 'Ended')
 )
 
+# User statuses
+USER_STATUS_CHOICES = (
+    (0, 'Active'),
+    (1, 'Banned')
+)
+
 
 # Employee model
 class User(db.Document, UserMixin):
@@ -31,7 +37,10 @@ class User(db.Document, UserMixin):
     patronymic = db.StringField(max_length=255)
     username = db.StringField(max_length=255, required=True, unique=True)
     position = db.IntField(choices=POSITION_CHOICES, required=True)
+
     tasks = db.ListField(db.ReferenceField('Task'))
+    project = db.ReferenceField('Project')
+
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
@@ -77,9 +86,11 @@ class Task(db.Document):
     status = db.IntField(choices=STATUS_CHOICES)
     performers = db.ListField(db.ReferenceField('User'))
     project = db.ReferenceField('Project')
+    initiator_person = db.ReferenceField('User')
 
     start_date = db.DateTimeField()
     end_date = db.DateTimeField()
+
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
@@ -99,6 +110,7 @@ class Project(db.Document):
     description = db.StringField()
     status = db.IntField(choices=STATUS_CHOICES, required=True)
     tasks = db.ListField(db.ReferenceField('Task'))
+    participants = db.ListField(db.ReferenceField('User'))
 
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)

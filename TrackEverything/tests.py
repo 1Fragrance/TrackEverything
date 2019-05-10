@@ -13,6 +13,7 @@ class TestBase(TestCase):
     def create_app(self):
         config_name = 'testing'
         app = create_app(config_name)
+        db.connection.drop_database('test')
         return app
 
     # Before test
@@ -54,11 +55,6 @@ class TestModels(TestBase):
 
 
 class TestViews(TestBase):
-    # Test index page
-    def test_index_view(self):
-        response = self.client.get(url_for('client.index'))
-        self.assertEqual(response.status_code, 200)
-
     # Test login page
     def test_login_view(self):
         response = self.client.get(url_for('auth.login'))
@@ -73,16 +69,8 @@ class TestViews(TestBase):
         self.assertRedirects(response, redirect_url)
 
     # Test dashboard page
-    def test_dashboard_view(self):
-        target_url = url_for('client.dashboard')
-        redirect_url = url_for('auth.login', next=target_url)
-        response = self.client.get(target_url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, redirect_url)
-
-    # Test admin dashboard page
-    def test_admin_dashboard_view(self):
-        target_url = url_for('admin.dashboard')
+    def test_index_view(self):
+        target_url = url_for('index')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
@@ -97,7 +85,7 @@ class TestViews(TestBase):
         self.assertRedirects(response, redirect_url)
 
     # Test tasks-list page
-    def test_roles_view(self):
+    def test_tasks_view(self):
         target_url = url_for('admin.list_tasks')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
@@ -105,7 +93,7 @@ class TestViews(TestBase):
         self.assertRedirects(response, redirect_url)
 
     # Test users-list page
-    def test_employees_view(self):
+    def test_users_view(self):
         target_url = url_for('admin.list_users')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
