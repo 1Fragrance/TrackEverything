@@ -13,7 +13,6 @@ class TestBase(TestCase):
     def create_app(self):
         config_name = 'testing'
         app = create_app(config_name)
-        db.connection.drop_database('test')
         return app
 
     # Before test
@@ -53,6 +52,19 @@ class TestModels(TestBase):
 
         self.assertEqual(Task.objects.count(), 1)
 
+    def test_idk(self):
+        user = User.objects(first_name="admin_first_name").first()
+        task1 = Task(name="Test_task", description="Test task description", status=2, start_date=datetime.utcnow, performers=[user.pk])
+        task1.save()
+
+        task2 = Task(name="Test_task2", description="Test task description2", status=2, start_date=datetime.utcnow)
+        task2.save()
+
+        user.tasks.append(task1.pk)
+        user.save()
+
+        return 
+
 
 class TestViews(TestBase):
     # Test login page
@@ -78,7 +90,7 @@ class TestViews(TestBase):
 
     # Test project-list page
     def test_departments_view(self):
-        target_url = url_for('admin.list_projects')
+        target_url = url_for('api.list_projects')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
@@ -86,7 +98,7 @@ class TestViews(TestBase):
 
     # Test tasks-list page
     def test_tasks_view(self):
-        target_url = url_for('admin.list_tasks')
+        target_url = url_for('api.list_tasks')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
@@ -94,7 +106,7 @@ class TestViews(TestBase):
 
     # Test users-list page
     def test_users_view(self):
-        target_url = url_for('admin.list_users')
+        target_url = url_for('api.list_users')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
