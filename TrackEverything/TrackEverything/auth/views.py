@@ -32,9 +32,9 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             login_user(user)
             if user.is_admin:
-                return redirect(url_for('api.index'))
+                return redirect(url_for('app.index'))
             else:
-                return redirect(url_for('api.index'))
+                return redirect(url_for('app.index'))
         else:
             flash('Invalid email or password.')
 

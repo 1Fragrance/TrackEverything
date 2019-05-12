@@ -12,9 +12,9 @@
             <div class="navbar-header">
                 {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
-                        <a class="navbar-brand topnav" href="{{ url_for('api.index') }}">Track Everything</a>
+                        <a class="navbar-brand topnav" href="{{ url_for('app.index') }}">Track Everything</a>
                     {% else %}
-                        <a class="navbar-brand topnav" href="{{ url_for('api.index') }}">Track Everything</a>
+                        <a class="navbar-brand topnav" href="{{ url_for('app.index') }}">Track Everything</a>
                     {% endif %}
                 {% else %}
                     <p class="navbar-brand topnav">Track Everything</p>
@@ -23,11 +23,11 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('api.index') }}">Dashboard</a></li>
-                        <li><a href="{{ url_for('api.list_tasks') }}">Tasks</a></li>
-                        <li><a href="{{ url_for('api.list_projects') }}">Projects</a></li>
+                        <li><a href="{{ url_for('app.index') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('app.list_tasks') }}">Tasks</a></li>
+                        <li><a href="{{ url_for('app.list_projects') }}">Projects</a></li>
                         {% if current_user.is_admin %}
-                            <li><a href="{{ url_for('api.list_users') }}">Users</a></li>
+                            <li><a href="{{ url_for('app.list_users') }}">Users</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                         <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.username }}!</a></li>

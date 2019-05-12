@@ -5,28 +5,28 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # Employee positions
 POSITION_CHOICES = (
-    (0, 'None'),
-    (1, 'Junior developer'),
-    (2, 'Regular developer'),
-    (3, 'Senior developer'),
-    (4, 'Solution architect'),
-    (5, 'Business analyst'),
-    (6, 'Project manager'),
-    (7, 'Designer'),
-    (8, 'Director')
+    (1, 'None'),
+    (2, 'Junior developer'),
+    (3, 'Regular developer'),
+    (4, 'Senior developer'),
+    (5, 'Solution architect'),
+    (6, 'Business analyst'),
+    (7, 'Project manager'),
+    (8, 'Designer'),
+    (9, 'Director')
 )
 
 # Task/Project statuses
 STATUS_CHOICES = (
-    (0, 'Not started'),
-    (1, 'On work'),
-    (2, 'Ended')
+    (1, 'Not started'),
+    (2, 'On work'),
+    (3, 'Ended')
 )
 
 # User statuses
 USER_STATUS_CHOICES = (
-    (0, 'Active'),
-    (1, 'Banned')
+    (1, 'Active'),
+    (2, 'Banned')
 )
 
 
@@ -84,8 +84,8 @@ class Task(db.Document):
     name = db.StringField(max_length=255, required=True, unique=True)
     description = db.StringField()
     status = db.IntField(choices=STATUS_CHOICES)
-    performers = db.ListField(db.ReferenceField('User'))
-    project = db.ReferenceField('Project')
+    performers = db.ListField(db.ReferenceField('User'), required=False)
+    project = db.ReferenceField('Project', required=True)
     initiator_person = db.ReferenceField('User')
 
     start_date = db.DateTimeField()

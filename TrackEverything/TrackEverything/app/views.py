@@ -1,5 +1,5 @@
-from . import api
-from flask import abort, flash, redirect, render_template, url_for
+from . import app
+from flask import abort, flash, redirect, render_template, url_for, jsonify
 from flask_login import current_user, login_required
 from .forms import TaskForm, ProjectForm, UserAssignForm
 from ..models import Task, Project, User
@@ -10,15 +10,15 @@ def is_admin():
         return False
     return True
 
-@api.route('/')
+@app.route('/')
 @login_required
 def index():
-    return render_template('api/index.html', title="Index page")
+    return render_template('app/index.html', title="Index page")
 
 
 # Common part
-# Task API
-@api.route('/tasks', methods=['GET', 'POST'])
+# Tasks
+@app.route('/tasks', methods=['GET', 'POST'])
 @login_required
 def list_tasks():
     if is_admin():
@@ -26,22 +26,22 @@ def list_tasks():
     else:
         tasks = Task.objects(performers=current_user.pk)
 
-    return render_template('api/tasks/tasks.html',
+    return render_template('app/tasks/tasks.html',
                            tasks=tasks, title="Tasks")
 
-@api.route('/projects')
+@app.route('/projects')
 @login_required
 def list_projects():
     if is_admin():
         projects = Project.objects.all()
     else:
         projects = Project.objects(participants=current_user.pk)
-    return render_template('api/projects/projects.html',
+    return render_template('app/projects/projects.html',
                            projects=projects, title='Projects')
 
 
 # Admin part
-@api.route('/tasks/add', methods=['GET', 'POST'])
+@app.route('/tasks/add', methods=['GET', 'POST'])
 @login_required
 def add_task():
     if not is_admin():
@@ -49,33 +49,51 @@ def add_task():
     else:
         add_task = True
         form = TaskForm()
+        
+        project_names = Project.objects().values_list('pk', 'name')
+        if not project_names:
+            selected_project_performers = ()
+        else:
+            selected_project_performers = User.objects(project=project_names[0][0]).values_list('pk', 'username')
+
+        for project in project_names:
+            form.project.choices.append((project[0], project[1]))
+
+        for performer in selected_project_performers:
+            form.performers.choices.append((performer[0], performer[1]))
+
         if form.validate_on_submit():
             task = Task(name=form.name.data,
                         description=form.description.data,
-                        status=form.status.data)
-                        # start_date=form.start_date.data,
-                        # end_date=form.end_date.data)
+                        status=form.status.data,
+                        start_date=form.start_date.data,
+                        end_date=form.end_date.data,
+                        project=form.project.data,
+                        performers=form.performers.data or [])
             try:
                 task.save()
                 flash('You have successfully added a new task.')
-            except:
+            except Exception as e:
                 flash('Error: task already exists.')
 
-            return redirect(url_for('api.list_tasks'))
+            return redirect(url_for('app.list_tasks'))
 
-        return render_template('api/tasks/task.html', action="Add", add_task=add_task,
+        return render_template('app/tasks/task.html', action="Add", add_task=add_task,
                            form=form, title="Add Task")
 
 
 # TODO add change status
-@api.route('/tasks/edit/<string:id>', methods=['GET', 'POST'])
+@app.route('/tasks/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_task(id):
     if not is_admin():
         abort(403)
     else:
-        add_task = False
         task = Task.objects(pk=id).first()
+        if not task:
+            abort(404)
+
+        add_task = False
         form = TaskForm(obj=task)
 
         if form.validate_on_submit():
@@ -87,20 +105,27 @@ def edit_task(id):
             task.save()
             flash('You have successfully edited the task.')
 
-            return redirect(url_for('api.list_tasks'))
+            return redirect(url_for('app.list_tasks'))
 
         form.name.data = task.name
         form.description.data = task.description
         form.status.data = task.status
-        # form.start_date = task.start_date
-        # form.end_date = form.end_date
+        form.start_date.data = task.start_date
+        form.end_date.data = task.end_date
 
-        return render_template('api/tasks/task.html', action="Edit",
+        project_users = User.objects(project=task.project).values_list('pk', 'username')
+        for user in project_users:
+            form.performers.choices.append((user[0], user[1]))
+
+        form.performers.data = task.performers
+
+
+        return render_template('app/tasks/task.html', action="Edit",
                             add_task=add_task, form=form,
                             task=task, title="Edit Task")
 
 
-@api.route('/tasks/delete/<string:id>', methods=['GET', 'POST'])
+@app.route('/tasks/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
 def delete_task(id):
     if not is_admin():
@@ -111,15 +136,12 @@ def delete_task(id):
         task.delete()
         flash('You have successfully deleted the task.')
 
-        return redirect(url_for('api.list_tasks'))
+        return redirect(url_for('app.list_tasks'))
         return render_template(title="Delete Task")
 
 
-# Project API
-
-
-
-@api.route('/projects/add', methods=['GET', 'POST'])
+# Project
+@app.route('/projects/add', methods=['GET', 'POST'])
 @login_required
 def add_project():
     if not is_admin():
@@ -138,14 +160,14 @@ def add_project():
             except:
                 flash('Error: project already exists.')
 
-            return redirect(url_for('api.list_projects'))
+            return redirect(url_for('app.list_projects'))
 
 
-        return render_template('api/projects/project.html', add_project=add_project,
+        return render_template('app/projects/project.html', add_project=add_project,
                                 form=form, title='Add Project')
 
 
-@api.route('/projects/edit/<string:id>', methods=['GET', 'POST'])
+@app.route('/projects/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(id):
     if not is_admin():
@@ -164,18 +186,18 @@ def edit_project(id):
             project.save()
             flash('You have successfully edited the project.')
 
-            return redirect(url_for('api.list_projects'))
+            return redirect(url_for('app.list_projects'))
 
         form.name.data = project.name
         form.short_name.data = project.short_name
         form.description.data = project.description
         form.status.data = project.status
 
-        return render_template('api/projects/project.html', add_project=add_project,
+        return render_template('app/projects/project.html', add_project=add_project,
                                 form=form, title="Edit Project")
 
 
-@api.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
+@app.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
 def delete_project(id):
     if not is_admin():
@@ -185,23 +207,23 @@ def delete_project(id):
         project.delete()
         flash('You have successfully deleted the project.')
 
-        return redirect(url_for('api.list_projects'))
+        return redirect(url_for('app.list_projects'))
         return render_template(title="Delete Project")
 
 
-# User API
-@api.route('/users')
+# User 
+@app.route('/users')
 @login_required
 def list_users():
     if not is_admin():
         abort(403)
     else:
         users = User.objects.all()
-        return render_template('api/users/users.html',
+        return render_template('app/users/users.html',
                                 users=users, title='Users')
 
 
-@api.route('/users/assign/<string:id>', methods=['GET', 'POST'])
+@app.route('/users/assign/<string:id>', methods=['GET', 'POST'])
 @login_required
 def assign_user(id):
     if not is_admin():
@@ -220,8 +242,40 @@ def assign_user(id):
             user.save()
             flash('You have successfully assigned a project and tasks.')
 
-            return redirect(url_for('api.list_users'))
+            return redirect(url_for('app.list_users'))
 
-        return render_template('api/users/user.html',
+        return render_template('app/users/user.html',
                                 user=user, form=form,
                                 title='Assign User')
+
+
+# ModelsAPI
+@app.route('/projects/<project_id>/tasks')
+def get_project_tasks(project_id):
+    tasks = Task.objects(project=project_id).values_list('pk', 'name')
+
+    tasksArray = []
+    
+    for task in tasks:
+        taskObj = {}
+        taskObj['pk'] = str(task[0])
+        taskObj['name'] = task[1]
+        tasksArray.append(taskObj)
+    
+    return jsonify({'tasks' : tasksArray})
+
+@app.route('/projects/<project_id>/users')
+def get_project_users(project_id):
+    users = User.objects(project=project_id).values_list('pk', 'username')
+
+    usersArray = []
+    
+    for user in users:
+        userObj = {}
+        userObj['pk'] = str(user[0])
+        userObj['username'] = user[1]
+        usersArray.append(userObj)
+    
+    return jsonify({'users' : usersArray})
+
+

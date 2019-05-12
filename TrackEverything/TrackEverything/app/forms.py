@@ -1,21 +1,20 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DateTimeField, SelectField, DateField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, SelectField,SelectMultipleField
+from wtforms.validators import DataRequired, Optional
 from ..models import STATUS_CHOICES, Project, Task
+from wtforms.fields.html5 import DateField
+from bson import ObjectId
 
-
-# TODO: Think about max_length validation
+# TODO: Think about max_length validation and enddate < startdate
+# TODO: Think about more difficult logic for statuses
 class TaskForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    description = StringField('Description')
-    # TODO: Think about more difficult logic
+    description = StringField('Description', validators=[Optional()])
     status = SelectField('Status', choices=STATUS_CHOICES, coerce=int, validators=[DataRequired()])
-
-    # TODO: Make it datetimefield
-    #   start_date = DateField('Start date', validators=[DataRequired()])
-    #   end_date = DateField('End date')
-    #   project select?
-    #   perfomers select?
+    start_date = DateField('Start date', format='%Y-%m-%d', validators=[DataRequired()])
+    end_date = DateField('End date', format='%Y-%m-%d', validators=[Optional()])
+    project = SelectField('Project', choices=[], coerce=ObjectId, validators=[DataRequired()])
+    performers = SelectMultipleField('Performers', choices=[], coerce=ObjectId, validators=[Optional()], default=[])
 
     submit = SubmitField('Submit')
 
@@ -23,7 +22,7 @@ class TaskForm(FlaskForm):
 class ProjectForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     short_name = StringField('Short name', validators=[DataRequired()])
-    description = StringField('Description')
+    description = StringField('Description', validators=[Optional()])
     status = SelectField('Status', choices=STATUS_CHOICES, coerce=int, validators=[DataRequired()])
     # tasks
     submit = SubmitField('Submit')
