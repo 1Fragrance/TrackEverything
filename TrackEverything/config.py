@@ -1,5 +1,3 @@
-
-
 # Common config
 class Config(object):
     DEBUG = True

@@ -1,15 +1,15 @@
-import os
 import unittest
 from datetime import datetime
 from flask import abort, url_for
 from flask_testing import TestCase
-from TrackEverything import create_app, db
-from TrackEverything.models import User, Project, Task
-from config import TestConfig
+from .src import create_app, db
+from .src.models.user import User
+from .src.models.project import Project
+from .src.models.task import Task
 
 
 class TestBase(TestCase):
-    # Test config
+    # TODO: Move config_name to config_file
     def create_app(self):
         config_name = 'testing'
         app = create_app(config_name)
@@ -54,7 +54,8 @@ class TestModels(TestBase):
 
     def test_idk(self):
         user = User.objects(first_name="admin_first_name").first()
-        task1 = Task(name="Test_task", description="Test task description", status=2, start_date=datetime.utcnow, performers=[user.pk])
+        task1 = Task(name="Test_task", description="Test task description", status=2, start_date=datetime.utcnow,
+                     performers=[user.pk])
         task1.save()
 
         task2 = Task(name="Test_task2", description="Test task description2", status=2, start_date=datetime.utcnow)
@@ -63,7 +64,7 @@ class TestModels(TestBase):
         user.tasks.append(task1.pk)
         user.save()
 
-        return 
+        return
 
 
 class TestViews(TestBase):
@@ -82,7 +83,7 @@ class TestViews(TestBase):
 
     # Test dashboard page
     def test_index_view(self):
-        target_url = url_for('index')
+        target_url = url_for('core.index')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
@@ -90,7 +91,7 @@ class TestViews(TestBase):
 
     # Test project-list page
     def test_departments_view(self):
-        target_url = url_for('api.list_projects')
+        target_url = url_for('core.list_projects')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
@@ -98,7 +99,7 @@ class TestViews(TestBase):
 
     # Test tasks-list page
     def test_tasks_view(self):
-        target_url = url_for('api.list_tasks')
+        target_url = url_for('core.list_tasks')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
@@ -106,7 +107,7 @@ class TestViews(TestBase):
 
     # Test users-list page
     def test_users_view(self):
-        target_url = url_for('api.list_users')
+        target_url = url_for('core.list_users')
         redirect_url = url_for('auth.login', next=target_url)
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 302)
