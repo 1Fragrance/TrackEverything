@@ -1,23 +1,29 @@
 from . import project
-from flask import abort, flash, redirect, render_template, url_for, jsonify
+from flask import abort, flash, redirect, render_template, url_for, jsonify, request
 from flask_login import current_user, login_required
 from .forms import ProjectForm
 from src.models.task import Task
 from src.models.project import Project
 from src.models.user import User
 from ..views import is_admin
+from mongoengine import Q
 
 
 # Get all projects
 @project.route('/projects')
 @login_required
 def list_projects():
-    if is_admin():
-        projects = Project.objects.all()
-    else:
-        projects = Project.objects(participants=current_user.pk)
+    projects = Project.objects.all()
+
     return render_template('core/projects/projects.html',
                            projects=projects, title='Projects')
+
+
+# Get users without project from DB
+def fill_free_users(form):
+    users_names = User.objects(Q(project__exists=False) or Q(project='')).values_list('pk', 'username')
+    for user in users_names:
+        form.participants.choices.append((user[0], user[1]))
 
 
 # Admin: add new project
@@ -29,18 +35,25 @@ def add_project():
     else:
         add_project = True
         form = ProjectForm()
-        if form.validate_on_submit():
-            project = Project(name=form.name.data,
-                              short_name=form.short_name.data,
-                              description=form.description.data,
-                              status=form.status.data)
+        if request.method == 'POST' and form.validate_on_submit():
+            new_project = Project(name=form.name.data,
+                                  short_name=form.short_name.data,
+                                  description=form.description.data,
+                                  status=form.status.data)
             try:
-                project.save()
+                new_project.save()
+
+                for user_pk in form.participants.data:
+                    User.objects(pk=user_pk).update_one(set__project=new_project.pk)
                 flash('You have successfully added a new project.')
+            # TODO: Remove this shitty warning
             except:
+                # TODO: make normal messages
                 flash('Error: project already exists.')
             # TODO: PRG Pattern
-            return redirect(url_for('core.list_projects'))
+            return redirect(url_for('project.list_projects'))
+
+        fill_free_users(form)
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title='Add Project')
@@ -57,21 +70,25 @@ def edit_project(id):
         project = Project.objects(pk=id).first()
         form = ProjectForm(obj=project)
 
-        if form.validate_on_submit():
+        if request.method == 'POST' and form.validate_on_submit():
             project.name = form.name.data
             project.short_name = form.short_name.data
             project.description = form.description.data
             project.status = form.status.data
 
+            # TODO: Mb update()
             project.save()
             flash('You have successfully edited the project.')
 
-            return redirect(url_for('core.list_projects'))
+            return redirect(url_for('project.list_projects'))
 
         form.name.data = project.name
         form.short_name.data = project.short_name
         form.description.data = project.description
         form.status.data = project.status
+        fill_free_users(form)
+        users = User.objects(project=project.pk).values_list('pk')
+        form.participants.data = users
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title="Edit Project")
@@ -88,7 +105,7 @@ def delete_project(id):
         project.delete()
         flash('You have successfully deleted the project.')
 
-        return redirect(url_for('core.list_projects'))
+        return redirect(url_for('project.list_projects'))
         return render_template(title="Delete Project")
 
 

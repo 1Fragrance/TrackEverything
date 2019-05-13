@@ -1,5 +1,5 @@
 from . import user
-from flask import abort, flash, redirect, render_template, url_for, jsonify
+from flask import abort, flash, redirect, render_template, url_for, jsonify, request
 from flask_login import current_user, login_required
 from .forms import UserAssignForm
 from src.models.task import Task
@@ -34,13 +34,13 @@ def assign_user(id):
             abort(403)
 
         form = UserAssignForm(obj=user)
-        if form.validate_on_submit():
+        if request.method == 'POST' and form.validate_on_submit():
             user.project = form.department.data
             user.task = form.role.data
             user.save()
             flash('You have successfully assigned a project and tasks.')
 
-            return redirect(url_for('core.list_users'))
+            return redirect(url_for('user.list_users'))
 
         return render_template('core/users/user.html',
                                user=user, form=form,

@@ -1,5 +1,5 @@
 from . import task
-from flask import abort, flash, redirect, render_template, url_for, jsonify
+from flask import abort, flash, redirect, render_template, url_for, jsonify, request
 from flask_login import current_user, login_required
 from .forms import TaskForm
 from src.models.task import Task
@@ -43,7 +43,7 @@ def add_task():
         for performer in selected_project_performers:
             form.performers.choices.append((performer[0], performer[1]))
 
-        if form.validate_on_submit():
+        if request.method == 'POST' and form.validate_on_submit():
             task = Task(name=form.name.data,
                         description=form.description.data,
                         status=form.status.data,
@@ -57,7 +57,7 @@ def add_task():
             except Exception as e:
                 flash('Error: task already exists.')
 
-            return redirect(url_for('core.list_tasks'))
+            return redirect(url_for('task.list_tasks'))
 
         return render_template('core/tasks/task.html', action="Add", add_task=add_task,
                                form=form, title="Add Task")
@@ -75,7 +75,7 @@ def delete_task(id):
         task.delete()
         flash('You have successfully deleted the task.')
 
-        return redirect(url_for('core.list_tasks'))
+        return redirect(url_for('task.list_tasks'))
         return render_template(title="Delete Task")
 
     # TODO add change status
@@ -95,7 +95,7 @@ def edit_task(id):
         add_task = False
         form = TaskForm(obj=task)
 
-        if form.validate_on_submit():
+        if request.method == 'POST' and form.validate_on_submit():
             task.name = form.name.data
             task.description = form.description.data
             task.status = form.status.data
@@ -104,7 +104,7 @@ def edit_task(id):
             task.save()
             flash('You have successfully edited the task.')
 
-            return redirect(url_for('core.list_tasks'))
+            return redirect(url_for('task.list_tasks'))
 
         form.name.data = task.name
         form.description.data = task.description
