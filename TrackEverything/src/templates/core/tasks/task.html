@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
+{% block title %}
+    {% if add_task %}
+        Add Task
+    {% else %}
+        Edit Task
+    {% endif %}
+{% endblock %}
+{% block body %}
+    <div class="content-section">
+        <div class="outer">
+            <div class="middle">
+                <div class="inner">
+                    <br/>
+                    {{ utils.flashed_messages() }}
+                    <br/>
+                    <div class="center">
+                        {% if add_task %}
+                            <h1>Add Task</h1>
+                        {% else %}
+                            <h1>Edit Task</h1>
+                        {% endif %}
+                        <br/>
+                        <form method="POST" role="form" class="form form-horizontal">
+                            {{ form.csrf_token }}
+                            {{ wtf.form_field(form.name) }}
+                            {{ wtf.form_field(form.description) }}
+                            {{ wtf.form_field(form.status) }}
+                            {{ wtf.form_field(form.start_date) }}
+                            {{ wtf.form_field(form.end_date) }}
+                            {{ wtf.form_field(form.project) }}
+                            <input type="submit">
+                        </form>
+                        <script>
+                            let project_select = document.getElementById("project");
+                            let performers_select = document.getElementById("performer");
+
+                            project_select.onchange = function () {
+                                let project_id = project_select.value;
+
+                                fetch('/projects/' + project_id + '/users').then(function (response) {
+                                    response.json().then(function (data) {
+                                        let optionHTML = '';
+
+                                        for (let user of data.users) {
+                                            optionHTML += '<option value="' + user.pk + '">' + user.username + '</option>';
+                                        }
+
+                                        performers_select.innerHTML = optionHTML;
+                                    })
+                                });
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
