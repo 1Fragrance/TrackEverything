@@ -13,11 +13,10 @@ class NonValidatingSelectField(SelectField):
         pass
 
 # Task view form
-# TODO: Think about max_length validation and enddate < startdate
 # TODO: Think about more difficult logic for statuses
 # TODO: Move messages to consts or resx
 class TaskForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(5, 255, 'Incorrect length')])
+    name = StringField('Name', validators=[DataRequired(), Length(3, 255, 'Incorrect length')])
     description = TextAreaField('Description', validators=[Optional()])
     status = SelectField('Status', choices=STATUS_CHOICES, coerce=int, validators=[DataRequired()])
     start_date = DateField('Start date', format='%Y-%m-%d', validators=[DataRequired()])
@@ -26,7 +25,7 @@ class TaskForm(FlaskForm):
     performer = NonValidatingSelectField('Performer', choices=[])
     submit = SubmitField('Submit')
 
-    """
+
     def validate(self):
         if not FlaskForm.validate(self):
             return False
@@ -42,9 +41,5 @@ class TaskForm(FlaskForm):
             if ed_date < st_date:
                 self.end_date.errors.append('Start date have to be less than end date')
                 result=False
-            #raise ValidationError('Start date have to be less than end date')
         
         return result
-
-
-"""

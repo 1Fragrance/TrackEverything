@@ -10,8 +10,16 @@
                 {{ utils.flashed_messages() }}
                 <br/>
                 <h1 style="text-align:center;">Projects</h1>
+                <br/>
+                <div style="text-align: center">
+                        <a href="{{ url_for('project.add_project') }}" class="btn btn-default btn-lg">
+                            <i class="fa fa-plus"></i>
+                            Add Project
+                        </a>
+                        <hr class="intro-divider">
+                        
+                </div>
                 {% if projects %}
-                <hr class="intro-divider">
                 <div class="center">
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -56,12 +64,7 @@
                     {% else %}
                     <div style="text-align: center">
                         <h3> No projects have been added. </h3>
-                        <hr class="intro-divider">
-                        {% endif %}
-                        <a href="{{ url_for('project.add_project') }}" class="btn btn-default btn-lg">
-                            <i class="fa fa-plus"></i>
-                            Add Project
-                        </a>
+                    {% endif %}
                     </div>
                 </div>
             </div>

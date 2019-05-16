@@ -23,11 +23,12 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('core.index') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('task.list_tasks') }}">Tasks</a></li>
-                <li><a href="{{ url_for('project.list_projects') }}">Projects</a></li>
+                <li><a href="{{ url_for('core.index') }}">Home</a></li>
+                <li><a href="{{ url_for('task.users_tasks') }}"> My Tasks</a></li>
+                <li><a href="{{ url_for('task.list_tasks') }}">Task List</a></li>
+                <li><a href="{{ url_for('project.list_projects') }}">Project List</a></li>
                 {% if current_user.is_admin %}
-                <li><a href="{{ url_for('user.list_users') }}">Users</a></li>
+                <li><a href="{{ url_for('user.list_users') }}">User Management</a></li>
                 {% endif %}
                 <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 <li><a><i class="fa fa-user"></i> Hi, {{ current_user.username }}!</a></li>

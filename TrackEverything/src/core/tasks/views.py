@@ -11,12 +11,19 @@ from bson import ObjectId
 
 # Get all tasks
 # TODO: Add form for only your tasks
-@task.route('/tasks', methods=['GET', 'POST'])
+@task.route('/tasks', methods=['GET'])
 @login_required
 def list_tasks():
         tasks = Task.objects().all().select_related()
         return render_template('core/tasks/tasks.html',
                                 tasks=tasks, title="Tasks")
+
+
+@task.route('/tasks/me', methods=['GET'])
+@login_required
+def users_tasks():
+        tasks = Task.objects(performer=current_user.pk).select_related()
+        return render_template('core/tasks/tasks.html', tasks=tasks, title="My tasks")
 
 
 def fill_projects_and_users(form, id=None):
@@ -83,7 +90,7 @@ def edit_task(id):
 
         add_task = False
         form = TaskForm(obj=task)
-        fill_projects_and_users(form, task.project.pk)
+        fill_projects_and_users(form, task.project.pk if task.project else None)
 
         if request.method == 'POST' and form.validate_on_submit():
             task.name = form.name.data

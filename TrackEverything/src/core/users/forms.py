@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, SelectField
 
-
+# TODO: Do this shit
 # User edit form
 class UserAssignForm(FlaskForm):
     task = SelectField('Task')

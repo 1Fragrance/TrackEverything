@@ -11,6 +11,14 @@
                 {{ utils.flashed_messages() }}
                 <br/>
                 <h1 style="text-align:center;">Tasks</h1>
+                {% if current_user.is_admin %}
+                </br>       
+                <div style="text-align: center">
+                    <a href="{{ url_for('task.add_task') }}" class="btn btn-default btn-lg">
+                        <i class="fa fa-plus"></i> Add Task
+                    </a>        
+                </div>
+                {% endif%}
                 {% if tasks %}
                 <hr class="intro-divider">
                 <div class="center">
@@ -62,15 +70,9 @@
                 <div style="text-align: center">
                     {% else %}
                     <div style="text-align: center">
+                        <br/>
                         <h3> No tasks have been added. </h3>
-                        <hr class="intro-divider">
                     {% endif %}
-                    {% if current_user.is_admin %}
-                        <a href="{{ url_for('task.add_task') }}" class="btn btn-default btn-lg">
-                            <i class="fa fa-plus"></i>
-                            Add Task
-                        </a>
-                    {% endif%}
                     </div>
                 </div>
             </div>
