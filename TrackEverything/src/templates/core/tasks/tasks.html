@@ -17,11 +17,15 @@
                     <table class="table table-striped table-bordered">
                         <thead>
                         <tr>
-                            <th width="15%"> Name</th>
-                            <th width="40%"> Description</th>
-                            <th width="15%"> Employee Count</th>
-                            <th width="15%"> Edit</th>
-                            <th width="15%"> Delete</th>
+                            <th width="10%"> Name</th>
+                            <th width="30%"> Description</th>
+                            <th width="10%"> Status</th>
+                            <th width="10%"> Performer</th>
+                            <th width="10%"> Project</th>  
+                            <th width="10%"> Created</th>
+                            <th width="10%"> Last update</th>
+                            <th width="5%"> Edit</th>
+                            <th width="5%"> Delete</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -29,16 +33,16 @@
                         <tr>
                             <td> {{ task.name }}</td>
                             <td> {{ task.description }}</td>
-                            <td> {{ task.start_date }}</td>
-                            <td> {{ task.end_date }}</td>
                             <td> {{ task.status }}</td>
-                            <td>
-                                {% if task.performer %}
-                                {{ task.performer.count() }}
-                                {% else %}
-                                0
-                                {% endif %}
-                            </td>
+                            {% if task.performer %}
+                                <td> {{ task.performer.username }}</td>
+                            {% else %}
+                                <td> Unsetted </td>
+                            {% endif %}
+                            <td> {{ task.project.short_name }}</td>
+                            <td> {{ task.create_date.strftime('%Y-%m-%d') }}</td>
+                            <td> {{ task.update_date.strftime('%Y-%m-%d') }}</td>
+                            {% if current_user.is_admin %}
                             <td>
                                 <a href="{{ url_for('task.edit_task', id=task.id) }}">
                                     <i class="fa fa-pencil"></i> Edit
@@ -49,6 +53,7 @@
                                     <i class="fa fa-trash"></i> Delete
                                 </a>
                             </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -59,11 +64,13 @@
                     <div style="text-align: center">
                         <h3> No tasks have been added. </h3>
                         <hr class="intro-divider">
-                        {% endif %}
+                    {% endif %}
+                    {% if current_user.is_admin %}
                         <a href="{{ url_for('task.add_task') }}" class="btn btn-default btn-lg">
                             <i class="fa fa-plus"></i>
                             Add Task
                         </a>
+                    {% endif%}
                     </div>
                 </div>
             </div>

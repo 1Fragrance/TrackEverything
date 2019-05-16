@@ -12,7 +12,7 @@ class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(2, 255, 'Incorrect length')])
     first_name = StringField('First Name', validators=[DataRequired(), Length(2, 255, 'Incorrect length')])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(2, 255, 'Incorrect length')])
-    patronymic = StringField('Patronymic', Length(2, 255, 'Incorrect length'))
+    patronymic = StringField('Patronymic', validators=[Length(2, 255, 'Incorrect length')])
     position = SelectField('Position', choices=POSITION_CHOICES, coerce=int, validators=[DataRequired()])
 
     password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm_password')])

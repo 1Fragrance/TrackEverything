@@ -1,3 +1,4 @@
+from datetime import datetime
 from . import project
 from flask import abort, flash, redirect, render_template, url_for, jsonify, request
 from flask_login import current_user, login_required
@@ -7,6 +8,7 @@ from src.models.project import Project
 from src.models.user import User
 from ..views import is_admin
 from mongoengine import Q
+from bson import ObjectId
 
 
 # Get all projects
@@ -21,10 +23,16 @@ def list_projects():
 
 # Get users without project from DB
 def fill_free_users(form):
-    users_names = User.objects(Q(project__exists=False) or Q(project='')).values_list('pk', 'username')
+    users_names = User.objects(Q(project__exists=False)).values_list('pk', 'username')
     for user in users_names:
         form.participants.choices.append((user[0], user[1]))
 
+
+def fill_free_and_relative_users(form, project_id):
+    users_names = User.objects(Q(project=project_id) | Q(project__exists=False)).values_list('pk', 'username')
+    for user in users_names:
+        form.participants.choices.append((user[0], user[1]))
+    
 
 # Admin: add new project
 @project.route('/projects/add', methods=['GET', 'POST'])
@@ -35,6 +43,7 @@ def add_project():
     else:
         add_project = True
         form = ProjectForm()
+        fill_free_users(form)
         if request.method == 'POST' and form.validate_on_submit():
             new_project = Project(name=form.name.data,
                                   short_name=form.short_name.data,
@@ -53,7 +62,7 @@ def add_project():
             # TODO: PRG Pattern
             return redirect(url_for('project.list_projects'))
 
-        fill_free_users(form)
+       
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title='Add Project')
@@ -69,31 +78,42 @@ def edit_project(id):
         add_project = False
         project = Project.objects(pk=id).first()
         form = ProjectForm(obj=project)
-
+        fill_free_and_relative_users(form, project.pk)
+        
         if request.method == 'POST' and form.validate_on_submit():
-            project.name = form.name.data
-            project.short_name = form.short_name.data
-            project.description = form.description.data
-            project.status = form.status.data
+            try:
+                project.name = form.name.data
+                project.short_name = form.short_name.data
+                project.description = form.description.data
+                project.status = form.status.data
+                project.update_date = datetime.utcnow()
+                project.save()
+                
+                for old_user in User.objects(project=project.pk):
+                    old_user.update(unset__project=1)
+                
+                User.objects(pk__in=form.participants.raw_data).update(project=project.pk)
 
-            # TODO: Mb update()
-            project.save()
-            flash('You have successfully edited the project.')
+                flash('You have successfully edited the project.')
+            except Exception as e:
+                flash(str(e) + 'smth goes wrong')
 
             return redirect(url_for('project.list_projects'))
-
+        
         form.name.data = project.name
         form.short_name.data = project.short_name
         form.description.data = project.description
         form.status.data = project.status
-        fill_free_users(form)
+        
         users = User.objects(project=project.pk).values_list('pk')
-        form.participants.data = users
+        if users:
+            form.participants.data = users
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title="Edit Project")
 
 
+# TODO: Check cascade delete 
 # Admin: delete project
 @project.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
@@ -102,6 +122,16 @@ def delete_project(id):
         abort(403)
     else:
         project = Project.objects(pk=id).first()
+        linked_tasks = Task.objects(project=project.pk)
+        linked_users = User.objects(project=project.pk)
+
+        for task in linked_tasks:
+            task.delete()
+
+        for user in linked_users:
+            user.project = None
+            user.save()
+            
         project.delete()
         flash('You have successfully deleted the project.')
 
