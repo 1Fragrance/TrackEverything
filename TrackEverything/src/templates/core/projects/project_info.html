@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Project Info{% endblock %}
+
+{% block body %}
+    <div class="content-section">
+        <div class="outer">
+            <div class="middle">
+                <div class="inner">
+                    <br/>
+                    {{ utils.flashed_messages() }}
+                    <br/>
+                    <h1 style="text-align:center;">{{ project.name }} info</h1>
+                    <hr class="intro-divider">
+                    {% if current_user.is_admin %}
+                        <div style="text-align: center">
+                            <a href="{{ url_for('project.edit_project', id=project.pk) }}"
+                               class="btn btn-default btn-lg">
+                                <i class="fa fa-plus"></i> Edit
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class="center">
+                        <div class="container body-content">
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    <label>Short name: </label>
+                                </dt>
+                                <dd>
+                                    {{ project.short_name }}
+                                </dd>
+                                <dt>
+                                    <label>Description: </label>
+                                </dt>
+                                <dd>
+                                    {{ project.description }}
+                                </dd>
+                                <dt>
+                                    <label>Status: </label>
+                                </dt>
+                                <dd>
+                                    {{ project.status }}
+                                </dd>
+                                <dt>
+                                    <label>Created: </label>
+                                </dt>
+                                <dd>
+                                    {{ project.create_date }}
+                                </dd>
+                                <dt>
+                                    <label>Last update: </label>
+                                </dt>
+                                <dd>
+                                    {{ project.update_date }}
+                                </dd>
+                                {% if project.tasks %}
+                                    <dt>
+                                        <label>Tasks: </label>
+                                    </dt>
+                                    <dd>
+                                        {% for task in project.tasks %}
+                                            <a href="{{ url_for('task.get_task', id=task.id) }}">
+                                                {{ task.name }}
+                                            </a>
+                                        {% endfor %}
+                                    </dd>
+                                {% endif %}
+                                {% if project.performers %}
+                                    <dt>
+                                        <label>Performers: </label>
+                                    </dt>
+                                    <dd>
+                                        {% for performer in project.performers %}
+                                            <a href="{{ url_for('user.get_user', id=performer.id) }}">
+                                                {{ performer.username }}
+                                            </a>
+                                        {% endfor %}
+                                    </dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,12 +1,28 @@
 from . import user
-from flask import abort, flash, redirect, render_template, url_for, jsonify, request
+from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 from .forms import UserAssignForm
-from src.models.task import Task
-from src.models.project import Project
 from src.models.user import User
+from src.models.task import Task
 from ..views import is_admin
 from bson import ObjectId
+
+
+# Show user info
+@user.route('/users/<string:id>')
+@login_required
+def get_user(id):
+    if current_user.id == id or is_admin():
+        user = User.objects(pk=id).first()
+        user_tasks = Task.objects(performer=user.pk)
+
+        if user_tasks:
+            user.tasks = user_tasks
+
+        return render_template('core/users/user_info.html',
+                               user=user, title=user.username)
+    else:
+        abort(403)
 
 
 # Admin: Show all users
@@ -16,16 +32,16 @@ def list_users():
     if not is_admin():
         abort(403)
     else:
-        users = User.objects.all()
+        users = User.objects().all()
         return render_template('core/users/users.html',
                                users=users, title='Users')
 
 
 # Admin: change user project/tasks
-@user.route('/users/assign/<string:id>', methods=['GET', 'POST'])
+@user.route('/users/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
-def assign_user(id):
-    if not is_admin() or current_user.pk == ObjectId(id):
+def edit_user(id):
+    if not is_admin() or current_user.pk != ObjectId(id):
         abort(403)
     else:
         user = User.objects(pk=id).first()
@@ -43,7 +59,7 @@ def assign_user(id):
 
         return render_template('core/users/user.html',
                                user=user, form=form,
-                               title='Assign User')
+                               title='Edit User')
 
 
 @user.route('/users/ban/<string:id>', methods=['GET', 'POST'])
@@ -59,4 +75,3 @@ def ban_user(id):
         return redirect(url_for('user.list_users'))
         # TODO: Check mb useless
         return render_template(title="Ban user")
-        

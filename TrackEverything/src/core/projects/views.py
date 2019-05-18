@@ -1,14 +1,13 @@
 from datetime import datetime
 from . import project
 from flask import abort, flash, redirect, render_template, url_for, jsonify, request
-from flask_login import current_user, login_required
+from flask_login import login_required
 from .forms import ProjectForm
 from src.models.task import Task
 from src.models.project import Project
 from src.models.user import User
 from ..views import is_admin
 from mongoengine import Q
-from bson import ObjectId
 
 
 # Get all projects
@@ -16,9 +15,28 @@ from bson import ObjectId
 @login_required
 def list_projects():
     projects = Project.objects.all()
-
     return render_template('core/projects/projects.html',
                            projects=projects, title='Projects')
+
+# Get project
+@project.route('/projects/<string:id>')
+@login_required
+def get_project(id):
+    project = Project.objects(pk=id).first()
+    if not project:
+        abort(404)
+
+    project_tasks = Task.objects(project=project.pk)
+    project_performers = User.objects(project=project.pk)
+
+    if project_tasks:
+        project.tasks = project_tasks
+
+    if project_performers:
+        project.performers = project_performers
+
+    return render_template('core/projects/project_info.html',
+                           project=project, title=project.name)
 
 
 # Get users without project from DB
@@ -32,7 +50,7 @@ def fill_free_and_relative_users(form, project_id):
     users_names = User.objects(Q(project=project_id) | Q(project__exists=False)).values_list('pk', 'username')
     for user in users_names:
         form.participants.choices.append((user[0], user[1]))
-    
+
 
 # Admin: add new project
 @project.route('/projects/add', methods=['GET', 'POST'])
@@ -62,8 +80,6 @@ def add_project():
             # TODO: PRG Pattern
             return redirect(url_for('project.list_projects'))
 
-       
-
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title='Add Project')
 
@@ -79,7 +95,7 @@ def edit_project(id):
         project = Project.objects(pk=id).first()
         form = ProjectForm(obj=project)
         fill_free_and_relative_users(form, project.pk)
-        
+
         if request.method == 'POST' and form.validate_on_submit():
             try:
                 project.name = form.name.data
@@ -88,10 +104,10 @@ def edit_project(id):
                 project.status = form.status.data
                 project.update_date = datetime.utcnow()
                 project.save()
-                
+
                 for old_user in User.objects(project=project.pk):
                     old_user.update(unset__project=1)
-                
+
                 User.objects(pk__in=form.participants.raw_data).update(project=project.pk)
 
                 flash('You have successfully edited the project.')
@@ -99,12 +115,12 @@ def edit_project(id):
                 flash(str(e) + 'smth goes wrong')
 
             return redirect(url_for('project.list_projects'))
-        
+
         form.name.data = project.name
         form.short_name.data = project.short_name
         form.description.data = project.description
         form.status.data = project.status
-        
+
         users = User.objects(project=project.pk).values_list('pk')
         if users:
             form.participants.data = users
@@ -113,7 +129,6 @@ def edit_project(id):
                                form=form, title="Edit Project")
 
 
-# TODO: Check cascade delete 
 # Admin: delete project
 @project.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
@@ -131,12 +146,11 @@ def delete_project(id):
         for user in linked_users:
             user.project = None
             user.save()
-            
+
         project.delete()
         flash('You have successfully deleted the project.')
 
         return redirect(url_for('project.list_projects'))
-        return render_template(title="Delete Project")
 
 
 # API Part
