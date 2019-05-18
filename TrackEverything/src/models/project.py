@@ -13,6 +13,7 @@ class Project(db.Document):
     create_date = db.DateTimeField(default=datetime.utcnow, required=True)
     update_date = db.DateTimeField(default=datetime.utcnow, required=True)
 
+
     def __init__(self, *args, **kwargs):
         db.Document.__init__(self, *args, **kwargs)
 

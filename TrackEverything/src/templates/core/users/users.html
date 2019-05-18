@@ -34,7 +34,11 @@
                                         <td> {{ user.first_name }} </td>
                                         <td> {{ user.last_name }} </td>
                                         <td> {{ user.patronymic }} </td>
-                                        <td> {{ user.position }} </td>
+                                        {% if positions and positions|length >= user.position - 1 %}
+                                            <td>  {{ positions[user.position - 1][1] }} </td>
+                                        {% else %}
+                                            Internal Error
+                                        {% endif %}
                                         <td>
                                             {% if user.project %}
                                                 {{ user.project.name }}

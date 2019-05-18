@@ -45,7 +45,11 @@
                                     <label>Position: </label>
                                 </dt>
                                 <dd>
-                                    {{ user.position }}
+                                    {% if positions and positions|length >= user.position - 1 %}
+                                        {{ positions[user.position - 1][1] }}
+                                    {% else %}
+                                        Internal Error
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Email: </label>
@@ -57,7 +61,11 @@
                                     <label>Status: </label>
                                 </dt>
                                 <dd>
-                                    {{ user.status }}
+                                    {% if user_statuses and user_statuses|length >= user.status - 1 %}
+                                        {{ user_statuses[user.status - 1][1] }}
+                                    {% else %}
+                                        Internal Error
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Is admin: </label>
@@ -66,16 +74,24 @@
                                     {{ user.is_admin }}
                                 </dd>
                                 <dt>
-                                    <label>Created: </label>
+                                    <label>Registration date: </label>
                                 </dt>
                                 <dd>
-                                    {{ user.create_date }}
+                                    {% if user.create_date %}
+                                        {{ user.create_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Last update: </label>
                                 </dt>
                                 <dd>
-                                    {{ user.update_date }}
+                                    {% if user.update_date %}
+                                        {{ user.update_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 {% if user.project %}
                                     <dt>

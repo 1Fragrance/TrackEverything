@@ -42,7 +42,11 @@
                                     <tr>
                                         <td> {{ task.name }}</td>
                                         <td> {{ task.description }}</td>
-                                        <td> {{ task.status }}</td>
+                                        {% if statuses and statuses|length >= task.status - 1 %}
+                                            <td> {{ statuses[task.status - 1][1] }}</td>
+                                        {% else %}
+                                            Internal Error
+                                        {% endif %}
                                         {% if task.performer %}
                                             <td> {{ task.performer.username }}</td>
                                         {% else %}
@@ -53,8 +57,16 @@
                                         {% else %}
                                             <td>-</td>
                                         {% endif %}
-                                        <td> {{ task.create_date.strftime('%Y-%m-%d') }}</td>
-                                        <td> {{ task.update_date.strftime('%Y-%m-%d') }}</td>
+                                        {% if task.create_date %}
+                                            <td> {{ task.create_date.strftime('%Y-%m-%d') }} </td>
+                                        {% else %}
+                                            None
+                                        {% endif %}
+                                        {% if task.update_date %}
+                                            <td> {{ task.update_date.strftime('%Y-%m-%d') }} </td>
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                         <td>
                                             <a href="{{ url_for('task.get_task', id=task.id) }}">
                                                 <i class="fa fa-info"></i> Details

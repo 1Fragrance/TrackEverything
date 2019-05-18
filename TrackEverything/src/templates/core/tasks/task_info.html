@@ -33,31 +33,51 @@
                                     <label>Status: </label>
                                 </dt>
                                 <dd>
-                                    {{ task.status }}
+                                    {% if statuses and statuses|length >= task.status - 1 %}
+                                        {{ statuses[task.status - 1][1] }}
+                                    {% else %}
+                                        Internal Error
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Start Date: </label>
                                 </dt>
                                 <dd>
-                                    {{ task.start_date }}
+                                    {% if task.start_date %}
+                                        {{ task.start_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>End Date: </label>
                                 </dt>
                                 <dd>
-                                    {{ task.end_date }}
+                                    {% if task.end_date %}
+                                        {{ task.end_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Created: </label>
                                 </dt>
                                 <dd>
-                                    {{ task.create_date }}
+                                    {% if task.create_date %}
+                                        {{ task.create_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Last update: </label>
                                 </dt>
                                 <dd>
-                                    {{ task.update_date }}
+                                    {% if task.update_date %}
+                                        {{ task.update_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 {% if task.project %}
                                     <dt>

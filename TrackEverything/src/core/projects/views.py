@@ -3,6 +3,7 @@ from . import project
 from flask import abort, flash, redirect, render_template, url_for, jsonify, request
 from flask_login import login_required
 from .forms import ProjectForm
+from src.models import STATUS_CHOICES
 from src.models.task import Task
 from src.models.project import Project
 from src.models.user import User
@@ -16,7 +17,7 @@ from mongoengine import Q
 def list_projects():
     projects = Project.objects.all()
     return render_template('core/projects/projects.html',
-                           projects=projects, title='Projects')
+                           projects=projects, statuses=STATUS_CHOICES, title='Projects')
 
 # Get project
 @project.route('/projects/<string:id>')
@@ -36,7 +37,7 @@ def get_project(id):
         project.performers = project_performers
 
     return render_template('core/projects/project_info.html',
-                           project=project, title=project.name)
+                           project=project, statuses=STATUS_CHOICES, title=project.name)
 
 
 # Get users without project from DB

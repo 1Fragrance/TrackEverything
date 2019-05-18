@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 from .forms import TaskForm
+from src.models import STATUS_CHOICES
 from src.models.task import Task
 from src.models.project import Project
 from src.models.user import User
@@ -16,7 +17,7 @@ from bson import ObjectId
 def list_tasks():
     task_list = Task.objects().all().select_related()
     return render_template('core/tasks/tasks.html',
-                           tasks=task_list, title="Tasks")
+                           tasks=task_list, statuses=STATUS_CHOICES, title="Tasks")
 
 
 @task.route('/tasks/<string:id>', methods=['GET'])
@@ -24,14 +25,14 @@ def list_tasks():
 def get_task(id):
     task = Task.objects(pk=id).first().select_related()
     return render_template('core/tasks/task_info.html',
-                           task=task, title=task.name)
+                           task=task, statuses=STATUS_CHOICES, title=task.name)
 
 
 @task.route('/tasks/me', methods=['GET'])
 @login_required
 def users_tasks():
     tasks = Task.objects(performer=current_user.pk).select_related()
-    return render_template('core/tasks/tasks.html', tasks=tasks, title="My tasks")
+    return render_template('core/tasks/tasks.html', statuses=STATUS_CHOICES, tasks=tasks, title="My tasks")
 
 
 def fill_projects_and_users(form, id=None):

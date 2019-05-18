@@ -2,6 +2,7 @@ from . import user
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 from .forms import UserAssignForm
+from src.models import USER_STATUS_CHOICES, POSITION_CHOICES
 from src.models.user import User
 from src.models.task import Task
 from src.models.project import Project
@@ -34,7 +35,7 @@ def get_user(id):
             user.tasks = user_tasks
 
         return render_template('core/users/user_info.html',
-                               user=user, title=user.username)
+                               user=user, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES, title=user.username)
     else:
         abort(403)
 
@@ -48,7 +49,8 @@ def list_users():
     else:
         users = User.objects().all()
         return render_template('core/users/users.html',
-                               users=users, title='Users')
+                               users=users, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES
+                               , title='Users')
 
 
 # Admin: change user project/tasks

@@ -42,9 +42,21 @@
                                         <td> {{ project.name }}</td>
                                         <td> {{ project.short_name }}</td>
                                         <td> {{ project.description }}</td>
-                                        <td> {{ project.status }}</td>
-                                        <td> {{ project.create_date.strftime('%Y-%m-%d') }}</td>
-                                        <td> {{ project.update_date.strftime('%Y-%m-%d') }}</td>
+                                        {% if statuses and statuses|length >= project.status - 1 %}
+                                            <td> {{ statuses[project.status - 1][1] }}</td>
+                                        {% else %}
+                                            Internal Error
+                                        {% endif %}
+                                        {% if project.create_date %}
+                                            <td> {{ project.create_date.strftime('%Y-%m-%d') }} </td>
+                                        {% else %}
+                                            None
+                                        {% endif %}
+                                        {% if project.update_date %}
+                                            <td> {{ project.update_date.strftime('%Y-%m-%d') }} </td>
+                                        {% else %}
+                                            None
+                                        {% endif %}
                                         <td>
                                             <a href="{{ url_for('project.get_project', id=project.id) }}">
                                                 <i class="fa fa-info"></i> Details

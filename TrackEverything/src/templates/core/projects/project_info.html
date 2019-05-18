@@ -40,19 +40,31 @@
                                     <label>Status: </label>
                                 </dt>
                                 <dd>
-                                    {{ project.status }}
+                                    {% if statuses and statuses|length >= project.status - 1 %}
+                                        {{ statuses[project.status - 1][1] }}
+                                    {% else %}
+                                        Internal Error
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Created: </label>
                                 </dt>
                                 <dd>
-                                    {{ project.create_date }}
+                                    {% if project.create_date %}
+                                        {{ project.create_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 <dt>
                                     <label>Last update: </label>
                                 </dt>
                                 <dd>
-                                    {{ project.update_date }}
+                                    {% if project.update_date %}
+                                        {{ project.update_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
                                 </dd>
                                 {% if project.tasks %}
                                     <dt>
