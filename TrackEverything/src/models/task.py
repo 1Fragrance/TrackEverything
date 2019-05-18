@@ -5,7 +5,7 @@ from . import STATUS_CHOICES
 
 # Task DB model
 class Task(db.Document):
-    name = db.StringField(max_length=255, required=True, unique=True)
+    name = db.StringField(max_length=255, required=True)
     description = db.StringField()
     status = db.IntField(choices=STATUS_CHOICES, required=True)
     performer = db.ReferenceField('User', required=False)

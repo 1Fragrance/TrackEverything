@@ -4,8 +4,22 @@ from flask_login import current_user, login_required
 from .forms import UserAssignForm
 from src.models.user import User
 from src.models.task import Task
+from src.models.project import Project
 from ..views import is_admin
 from bson import ObjectId
+
+
+def fill_form_project_and_tasks(form):
+    projects = Project.objects().values_list('pk', 'name')
+
+    if projects:
+        for project in projects:
+            form.project.choices.append((project[0], project[1]))
+
+        selected_project = projects[0][0]
+        project_tasks = Task.objects(project=selected_project).values_list('pk', 'name')
+        for task in project_tasks:
+            form.tasks.choices.append((task[0], task[1]))
 
 
 # Show user info
@@ -45,17 +59,47 @@ def edit_user(id):
         abort(403)
     else:
         user = User.objects(pk=id).first()
+        if not user:
+            abort(404)
 
         form = UserAssignForm(obj=user)
+        fill_form_project_and_tasks(form)
 
-        # TODO: populate Project & Tasks 
         if request.method == 'POST' and form.validate_on_submit():
-            user.project = form.department.data
-            user.task = form.role.data
-            user.save()
-            flash('You have successfully assigned a project and tasks.')
+            try:
+                user.username = form.username.data
+                user.email = form.email.data
+                user.first_name = form.first_name.data
+                user.last_name = form.last_name.data
+                user.patronymic = form.patronymic.data
+                user.position = form.position.data
+                if form.project.data:
+                    user.project = ObjectId(form.project.data)
+                user.save()
+
+                for old_task in Task.objects(performer=user.pk):
+                    old_task.update(unset__performer=1)
+
+                Task.objects(pk__in=form.tasks.raw_data).update(performer=user.pk)
+
+                flash('Gratz.')
+            except Exception as e:
+                flash(str(e))
 
             return redirect(url_for('user.list_users'))
+
+        form.username = user.username
+        form.email = user.email
+        form.first_name = user.first_name
+        form.last_name = user.last_name
+        form.patronymic = user.patronymic
+        form.position = user.position
+        if user.project:
+            form.project = str(user.project)
+
+        tasks = Task.objects(performer=user.pk).values_list('pk')
+        if tasks:
+            form.tasks.data = tasks
 
         return render_template('core/users/user.html',
                                user=user, form=form,

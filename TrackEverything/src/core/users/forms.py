@@ -1,11 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Length, ValidationError, Email
+from wtforms import StringField, SubmitField, SelectField, SelectMultipleField
+from wtforms.validators import DataRequired, Length, ValidationError, Email, Optional
 from src.models import POSITION_CHOICES
 from src.models.user import User
+from ..tasks.forms import NonValidatingSelectField
+from bson import ObjectId
 
 
-# TODO: Do this shit
 class UserAssignForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(3, 255, 'Incorrect length')])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(2, 255, 'Incorrect length')])
@@ -13,14 +14,14 @@ class UserAssignForm(FlaskForm):
     last_name = StringField('Last Name', validators=[DataRequired(), Length(2, 255, 'Incorrect length')])
     patronymic = StringField('Patronymic', validators=[Length(2, 255, 'Incorrect length')])
     position = SelectField('Position', choices=POSITION_CHOICES, coerce=int, validators=[DataRequired()])
-    tasks = SelectField('Task')
-    project = SelectField('Project')
+    tasks = SelectMultipleField('Tasks', choices=[], coerce=ObjectId, validators=[Optional()])
+    project = NonValidatingSelectField('Project', choices=[])
     submit = SubmitField('Submit')
 
     def validate_email(self, field):
-        if User.objects(email=field.data):
+        if self.email.data != field.data and User.objects(email=field.data):
             raise ValidationError('Email is already in use.')
 
     def validate_username(self, field):
-        if User.objects(username=field.data):
+        if self.username.data != field.data and User.objects(username=field.data):
             raise ValidationError('Username is already in use.')

@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, TextAreaField
-from wtforms.validators import DataRequired, Optional, Length
+from wtforms.validators import DataRequired, Optional, Length, ValidationError
 from wtforms.fields.html5 import DateField
 from src.models import STATUS_CHOICES
+from src.models.task import Task
 
 
 class NonValidatingSelectField(SelectField):
