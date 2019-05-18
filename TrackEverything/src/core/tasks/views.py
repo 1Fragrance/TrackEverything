@@ -24,6 +24,9 @@ def list_tasks():
 @login_required
 def get_task(id):
     task = Task.objects(pk=id).first().select_related()
+    if not task:
+        abort(404)
+
     return render_template('core/tasks/task_info.html',
                            task=task, statuses=STATUS_CHOICES, title=task.name)
 
@@ -92,7 +95,6 @@ def edit_task(id):
     if not is_admin():
         abort(403)
     else:
-
         task = Task.objects(pk=id).first()
         if not task:
             abort(404)
@@ -149,8 +151,10 @@ def delete_task(id):
     if not is_admin():
         abort(403)
     else:
-        # TODO: 404 error validation
         task = Task.objects(pk=id).first()
+        if not task:
+            abort(404)
+
         task.delete()
         flash('You have successfully deleted the task.')
 

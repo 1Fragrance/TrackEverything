@@ -47,6 +47,7 @@ def fill_free_users(form):
         form.participants.choices.append((user[0], user[1]))
 
 
+# Get users without project & relative to project from DB
 def fill_free_and_relative_users(form, project_id):
     users_names = User.objects(Q(project=project_id) | Q(project__exists=False)).values_list('pk', 'username')
     for user in users_names:
@@ -94,6 +95,9 @@ def edit_project(id):
     else:
         add_project = False
         project = Project.objects(pk=id).first()
+        if not project:
+            abort(404)
+
         form = ProjectForm(obj=project)
         fill_free_and_relative_users(form, project.pk)
 
@@ -138,6 +142,9 @@ def delete_project(id):
         abort(403)
     else:
         project = Project.objects(pk=id).first()
+        if not project:
+            abort(404)
+
         linked_tasks = Task.objects(project=project.pk)
         linked_users = User.objects(project=project.pk)
 
@@ -157,6 +164,7 @@ def delete_project(id):
 # API Part
 # Get project tasks
 @project.route('/projects/<project_id>/tasks')
+@login_required
 def get_project_tasks(project_id):
     tasks = Task.objects(project=project_id).values_list('pk', 'name')
 
@@ -171,6 +179,7 @@ def get_project_tasks(project_id):
 
 # Get project participants
 @project.route('/projects/<project_id>/users')
+@login_required
 def get_project_users(project_id):
     users = User.objects(project=project_id).values_list('pk', 'username')
 

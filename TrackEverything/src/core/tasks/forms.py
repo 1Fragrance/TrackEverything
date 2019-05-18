@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, TextAreaField
-from wtforms.validators import DataRequired, Optional, Length, ValidationError
+from wtforms.validators import DataRequired, Optional, Length, Regexp
 from wtforms.fields.html5 import DateField
 from src.models import STATUS_CHOICES
-from src.models.task import Task
 
 
 class NonValidatingSelectField(SelectField):
@@ -14,10 +13,10 @@ class NonValidatingSelectField(SelectField):
 
 
 # Task view form
-# TODO: Think about more difficult logic for statuses
 # TODO: Move messages to consts or resx
 class TaskForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(3, 255, 'Incorrect length')])
+    name = StringField('Name', validators=[DataRequired(), Length(3, 255, 'Incorrect length'),
+                                           Regexp("^[a-zA-Z-_]+$", message='Only latin letters')])
     description = TextAreaField('Description', validators=[Optional()])
     status = SelectField('Status', choices=STATUS_CHOICES, coerce=int, validators=[DataRequired()])
     start_date = DateField('Start date', format='%Y-%m-%d', validators=[DataRequired()])

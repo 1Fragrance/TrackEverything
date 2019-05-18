@@ -32,8 +32,10 @@
                                     <th width="10%"> Created</th>
                                     <th width="10%"> Last update</th>
                                     <th width="5%"> Details</th>
-                                    <th width="5%"> Edit</th>
-                                    <th width="5%"> Delete</th>
+                                    {% if current_user.is_admin %}
+                                        <th width="5%"> Edit</th>
+                                        <th width="5%"> Delete</th>
+                                    {% endif %}
                                 </tr>
                                 </thead>
                                 <tbody>

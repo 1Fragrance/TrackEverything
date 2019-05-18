@@ -10,6 +10,26 @@
                     <h1> Edit user </h1>
                     <br>
                     {{ wtf.quick_form(form) }}
+                    <script>
+                            let tasks_select = document.getElementById("tasks");
+                            let project_select = document.getElementById("project");
+
+                            project_select.onchange = function () {
+                                let project_id = project_select.value;
+
+                                fetch('/projects/' + project_id + '/tasks').then(function (response) {
+                                    response.json().then(function (data) {
+                                        let optionHTML = '';
+
+                                        for (let task of data.tasks) {
+                                            optionHTML += '<option value="' + task.pk + '">' + task.name + '</option>';
+                                        }
+
+                                        tasks_select.innerHTML = optionHTML;
+                                    })
+                                });
+                            }
+                        </script>
                 </div>
             </div>
         </div>

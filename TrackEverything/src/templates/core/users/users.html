@@ -24,7 +24,7 @@
                                     <th width="15%"> Project</th>
                                     <th width="5%"> Details</th>
                                     <th width="5%"> Edit</th>
-                                    <th width="5%"> Ban</th>
+                                    <th width="5%"> Block</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -58,9 +58,15 @@
                                         </td>
                                         <td>
                                             {% if not current_user.pk == user.pk %}
-                                                <a href="{{ url_for('user.ban_user', id=user.id) }}">
-                                                    <i class="fa fa-user-plus"></i> Ban
-                                                </a>
+                                                {% if user.status == 1 %}
+                                                    <a href="{{ url_for('user.ban_user', id=user.id) }}">
+                                                        <i class="fa fa-user-plus"></i> Block
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ url_for('user.restore_user', id=user.id) }}">
+                                                        <i class="fa fa-user-plus"></i> Restore
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
                                         </td>
                                     </tr>

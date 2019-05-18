@@ -27,8 +27,11 @@ def fill_form_project_and_tasks(form):
 @user.route('/users/<string:id>')
 @login_required
 def get_user(id):
-    if current_user.id == id or is_admin():
+    if current_user.id == ObjectId(id) or is_admin():
         user = User.objects(pk=id).first()
+        if not user:
+            abort(404)
+
         user_tasks = Task.objects(performer=user.pk)
 
         if user_tasks:
@@ -115,9 +118,26 @@ def ban_user(id):
         abort(403)
     else:
         user = User.objects(pk=id).first()
+        if not user:
+            abort(404)
         user.status = 2
+        user.save()
         flash('User banned')
 
         return redirect(url_for('user.list_users'))
-        # TODO: Check mb useless
-        return render_template(title="Ban user")
+
+
+@user.route('/users/restore/<string:id>', methods=['GET', 'POST'])
+@login_required
+def restore_user(id):
+    if not is_admin() or current_user.pk == ObjectId(id):
+        abort(403)
+    else:
+        user = User.objects(pk=id).first()
+        if not user:
+            abort(404)
+        user.status = 1
+        user.save()
+        flash('User restored')
+
+        return redirect(url_for('user.list_users'))

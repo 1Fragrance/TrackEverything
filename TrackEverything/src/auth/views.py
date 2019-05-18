@@ -31,11 +31,11 @@ def login():
     if form.validate_on_submit():
         user = User.objects(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
-            login_user(user)
-            if user.is_admin:
+            if not user.status == 2:
+                login_user(user)
                 return redirect(url_for('core.index'))
             else:
-                return redirect(url_for('core.index'))
+                flash('Sorry, but your account is banned')
         else:
             flash('Invalid email or password.')
 
