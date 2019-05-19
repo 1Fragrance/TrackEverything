@@ -1,6 +1,7 @@
 # Common config
 class Config(object):
     DEBUG = True
+    LOG_FILENAME = 'log.txt'
 
 
 # Dev config

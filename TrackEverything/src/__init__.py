@@ -3,6 +3,8 @@ from flask_mongoengine import MongoEngine
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from config import app_config
+import logging
+from logging.handlers import RotatingFileHandler
 
 db = MongoEngine()
 login_manager = LoginManager()
@@ -12,6 +14,13 @@ def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
+
+    formatter = logging.Formatter(
+        "[%(asctime)s]  %(levelname)s - %(message)s")
+    handler = RotatingFileHandler(app_config[config_name].LOG_FILENAME, maxBytes=10000000, backupCount=5)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
 
     Bootstrap(app)
     db.init_app(app)
