@@ -3,7 +3,6 @@ from wtforms import PasswordField, StringField, SubmitField, ValidationError, Se
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 from src.models import POSITION_CHOICES
 from src.models.user import User
-from runserver import app
 
 
 # Create user form
@@ -25,12 +24,10 @@ class RegistrationForm(FlaskForm):
 
     def validate_email(self, field):
         if User.objects(email=field.data):
-            app.logger.info('ValidationError: Email is already in use.')
             raise ValidationError('Email is already in use.')
 
     def validate_username(self, field):
         if User.objects(username=field.data):
-            app.logger.info('ValidationError: Username is already in use.')
             raise ValidationError('Username is already in use.')
 
 

@@ -1,10 +1,12 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_mongoengine import MongoEngine
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from config import app_config
 import logging
 from logging.handlers import RotatingFileHandler
+from time import strftime
+import traceback
 
 db = MongoEngine()
 login_manager = LoginManager()
@@ -15,12 +17,10 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 
-    formatter = logging.Formatter(
-        "[%(asctime)s]  %(levelname)s - %(message)s")
-    handler = RotatingFileHandler(app_config[config_name].LOG_FILENAME, maxBytes=10000000, backupCount=5)
-    handler.setLevel(logging.INFO)
-    handler.setFormatter(formatter)
-    app.logger.addHandler(handler)
+    handler = RotatingFileHandler('app.log', maxBytes=1000000, backupCount=3)
+    logger = logging.getLogger('tdm')
+    logger.setLevel(logging.ERROR)
+    logger.addHandler(handler)
 
     Bootstrap(app)
     db.init_app(app)
@@ -56,6 +56,20 @@ def create_app(config_name):
     def internal_server_error(error):
         return render_template('errors/500.html', title='Server Error'), 500
 
+    @app.after_request
+    def after_request(response):
+        timestamp = strftime('[%Y-%b-%d %H:%M]')
+        logger.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme,
+                     request.full_path, response.status)
+
+        return response
+
+    @app.errorhandler(Exception)
+    def exceptions(e):
+        tb = traceback.format_exc()
+        timestamp = strftime('[%Y-%b-%d %H:%M]')
+        logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method,
+                     request.scheme, request.full_path, tb)
+        return e.status_code
+
     return app
-
-

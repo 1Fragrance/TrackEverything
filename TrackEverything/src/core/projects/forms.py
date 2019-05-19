@@ -19,11 +19,9 @@ class ProjectForm(FlaskForm):
     submit = SubmitField('Submit')
 
     def validate_name(self, field):
-        if self.name.data != field.data and Project.objects(name=field.data):
-            # app.logger.info('ValidationError: Project name is already in use.')
+        if self.name.data != field.data or Project.objects(name=field.data):
             raise ValidationError('Project name is already in use.')
 
     def validate_short_name(self, field):
-        if self.short_name.data != field.data and Project.objects(short_name=field.data):
-            # app.logger.info('ValidationError: Short name is already in use.')
+        if self.short_name.data != field.data or Project.objects(short_name=field.data):
             raise ValidationError('Short name is already in use.')

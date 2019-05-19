@@ -8,6 +8,7 @@ from src.models.task import Task
 from src.models.project import Project
 from ..views import is_admin
 from bson import ObjectId
+from flask import current_app as app
 
 
 def fill_form_project_and_tasks(form):
@@ -89,10 +90,9 @@ def edit_user(id):
                 flash('Gratz.')
                 return redirect(url_for('user.get_user', id=user.pk))
             except Exception as e:
+                app.logger.error(str(e))
                 flash(str(e))
                 return redirect(url_for('user.list_users'))
-
-
 
         form.username = user.username
         form.email = user.email

@@ -9,6 +9,7 @@ from src.models.project import Project
 from src.models.user import User
 from ..views import is_admin
 from mongoengine import Q
+from flask import current_app as app
 
 
 # Get all projects
@@ -77,11 +78,12 @@ def add_project():
                 flash('You have successfully added a new project.')
                 return redirect(url_for('project.get_project', id=new_project.pk))
             # TODO: Remove this shitty warning
-            except:
+            except Exception as e:
                 # TODO: make normal messages
+                app.logger.error(str(e))
                 flash('Error: project already exists.')
-                return redirect(url_for('project.list_projects', id=new_project.pk))
 
+                return redirect(url_for('project.list_projects', id=new_project.pk))
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title='Add Project')
@@ -119,6 +121,7 @@ def edit_project(id):
                 flash('You have successfully edited the project.')
                 return redirect(url_for('project.get_project', id=project.pk))
             except Exception as e:
+                app.logger.error(str(e))
                 flash(str(e) + 'smth goes wrong')
 
                 return redirect(url_for('project.list_projects'))

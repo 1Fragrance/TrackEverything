@@ -9,6 +9,7 @@ from src.models.project import Project
 from src.models.user import User
 from ..views import is_admin
 from bson import ObjectId
+from flask import current_app as app
 
 
 # Get all tasks
@@ -102,6 +103,7 @@ def add_task():
                 flash('You have successfully added a new task.')
                 return redirect(url_for('task.get_task', id=task.pk))
             except Exception as e:
+                app.logger.error(str(e))
                 flash('Error: task already exists.')
                 return redirect(url_for('task.list_tasks'))
 
@@ -142,6 +144,7 @@ def edit_task(id):
             try:
                 task.save()
             except Exception as e:
+                app.logger.error(str(e))
                 flash(str(e) + 'Error: task already exists.')
                 return redirect(url_for('task.list_tasks'))
 
