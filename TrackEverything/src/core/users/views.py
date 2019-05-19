@@ -38,7 +38,8 @@ def get_user(id):
             user.tasks = user_tasks
 
         return render_template('core/users/user_info.html',
-                               user=user, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES, title=user.username)
+                               user=user, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES,
+                               title=user.username)
     else:
         abort(403)
 
@@ -60,9 +61,7 @@ def list_users():
 @user.route('/users/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(id):
-    if not is_admin() or current_user.pk != ObjectId(id):
-        abort(403)
-    else:
+    if is_admin() or current_user.pk == ObjectId(id):
         user = User.objects(pk=id).first()
         if not user:
             abort(404)
@@ -109,6 +108,8 @@ def edit_user(id):
         return render_template('core/users/user.html',
                                user=user, form=form,
                                title='Edit User')
+    else:
+        abort(403)
 
 
 @user.route('/users/ban/<string:id>', methods=['GET', 'POST'])

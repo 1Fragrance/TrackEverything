@@ -31,6 +31,27 @@ def get_task(id):
                            task=task, statuses=STATUS_CHOICES, title=task.name)
 
 
+@task.route('/tasks/<string:id>/update/<int:status>', methods=['GET'])
+@login_required
+def update_task_status(id, status):
+    task = Task.objects(pk=id).first()
+    if not task:
+        abort(404)
+
+    if not is_admin() and task.performer == current_user.pk:
+        abort(403)
+
+    if status <= len(STATUS_CHOICES):
+        task.status = status
+        task.save()
+        flash("Task was updated")
+    else:
+        flash("Can't update task")
+
+    return render_template('core/tasks/task_info.html',
+                           task=task, statuses=STATUS_CHOICES, title=task.name)
+
+
 @task.route('/tasks/me', methods=['GET'])
 @login_required
 def users_tasks():

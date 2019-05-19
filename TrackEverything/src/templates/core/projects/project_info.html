@@ -83,11 +83,17 @@
                                         <label>Performers: </label>
                                     </dt>
                                     <dd>
-                                        {% for performer in project.performers %}
-                                            <a href="{{ url_for('user.get_user', id=performer.id) }}">
+                                        {% if current_user.is_admin %}
+                                            {% for performer in project.performers %}
+                                                <a href="{{ url_for('user.get_user', id=performer.id) }}">
+                                                    {{ performer.username }}
+                                                </a>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for performer in project.performers %}
                                                 {{ performer.username }}
-                                            </a>
-                                        {% endfor %}
+                                            {% endfor %}
+                                        {% endif %}
                                     </dd>
                                 {% endif %}
                             </dl>
