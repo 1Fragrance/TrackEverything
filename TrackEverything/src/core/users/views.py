@@ -87,10 +87,12 @@ def edit_user(id):
                 Task.objects(pk__in=form.tasks.raw_data).update(performer=user.pk)
 
                 flash('Gratz.')
+                return redirect(url_for('user.get_user', id=user.pk))
             except Exception as e:
                 flash(str(e))
+                return redirect(url_for('user.list_users'))
 
-            return redirect(url_for('user.list_users'))
+
 
         form.username = user.username
         form.email = user.email

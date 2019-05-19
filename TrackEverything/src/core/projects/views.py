@@ -75,12 +75,13 @@ def add_project():
                 for user_pk in form.participants.data:
                     User.objects(pk=user_pk).update_one(set__project=new_project.pk)
                 flash('You have successfully added a new project.')
+                return redirect(url_for('project.get_project', id=new_project.pk))
             # TODO: Remove this shitty warning
             except:
                 # TODO: make normal messages
                 flash('Error: project already exists.')
-            # TODO: PRG Pattern
-            return redirect(url_for('project.list_projects'))
+                return redirect(url_for('project.list_projects', id=new_project.pk))
+
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title='Add Project')
@@ -116,10 +117,11 @@ def edit_project(id):
                 User.objects(pk__in=form.participants.raw_data).update(project=project.pk)
 
                 flash('You have successfully edited the project.')
+                return redirect(url_for('project.get_project', id=project.pk))
             except Exception as e:
                 flash(str(e) + 'smth goes wrong')
 
-            return redirect(url_for('project.list_projects'))
+                return redirect(url_for('project.list_projects'))
 
         form.name.data = project.name
         form.short_name.data = project.short_name

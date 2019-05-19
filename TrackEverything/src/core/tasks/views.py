@@ -100,10 +100,10 @@ def add_task():
             try:
                 task.save()
                 flash('You have successfully added a new task.')
+                return redirect(url_for('task.get_task', id=task.pk))
             except Exception as e:
                 flash('Error: task already exists.')
-
-            return redirect(url_for('task.list_tasks'))
+                return redirect(url_for('task.list_tasks'))
 
         return render_template('core/tasks/task.html', action="Add", add_task=add_task,
                                form=form, title="Add Task")
@@ -143,10 +143,10 @@ def edit_task(id):
                 task.save()
             except Exception as e:
                 flash(str(e) + 'Error: task already exists.')
+                return redirect(url_for('task.list_tasks'))
 
             flash('You have successfully edited the task.')
-
-            return redirect(url_for('task.list_tasks'))
+            return redirect(url_for('task.get_task', id=task.pk))
 
         form.name.data = task.name
         form.description.data = task.description
@@ -181,4 +181,3 @@ def delete_task(id):
 
         return redirect(url_for('task.list_tasks'))
 
-    # TODO add change status
