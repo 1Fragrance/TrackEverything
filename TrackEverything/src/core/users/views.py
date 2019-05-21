@@ -9,6 +9,8 @@ from src.models.project import Project
 from ..views import is_admin
 from bson import ObjectId
 from flask import current_app as app
+from datetime import datetime
+from src.common.messages import USER_BANNED_MESSAGE, USER_EDITED_MESSAGE, USER_EXCEPTION_MESSAGE, USER_RESTORED_MESSAGE
 
 
 def fill_form_project_and_tasks(form):
@@ -78,6 +80,7 @@ def edit_user(id):
                 user.last_name = form.last_name.data
                 user.patronymic = form.patronymic.data
                 user.position = form.position.data
+                user.update_date = datetime.utcnow()
                 if form.project.data:
                     user.project = ObjectId(form.project.data)
                 user.save()
@@ -87,11 +90,11 @@ def edit_user(id):
 
                 Task.objects(pk__in=form.tasks.raw_data).update(performer=user.pk)
 
-                flash('Gratz.')
+                flash(USER_EDITED_MESSAGE)
                 return redirect(url_for('user.get_user', id=user.pk))
             except Exception as e:
                 app.logger.error(str(e))
-                flash(str(e))
+                flash(USER_EXCEPTION_MESSAGE)
                 return redirect(url_for('user.list_users'))
 
         form.username = user.username
@@ -125,7 +128,7 @@ def ban_user(id):
             abort(404)
         user.status = 2
         user.save()
-        flash('User banned')
+        flash(USER_BANNED_MESSAGE)
 
         return redirect(url_for('user.list_users'))
 
@@ -141,6 +144,6 @@ def restore_user(id):
             abort(404)
         user.status = 1
         user.save()
-        flash('User restored')
+        flash(USER_RESTORED_MESSAGE)
 
         return redirect(url_for('user.list_users'))

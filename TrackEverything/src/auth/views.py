@@ -42,7 +42,6 @@ def login():
                 flash('Sorry, but your account is banned')
         else:
             flash('Invalid email or password.')
-            # app.logger.info('Invalid email or password.')
 
     return render_template('auth/login.html', form=form, title='Login')
 

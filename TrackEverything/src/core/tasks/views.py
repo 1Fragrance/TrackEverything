@@ -10,6 +10,7 @@ from src.models.user import User
 from ..views import is_admin
 from bson import ObjectId
 from flask import current_app as app
+from src.common.messages import TASK_ADDED_MESSAGE, TASK_DELETED_MESSAGE, TASK_EDITED_MESSAGE, TASK_EXCEPTION_MESSAGE, TASK_UPDATED_MESSAGE
 
 
 # Get all tasks
@@ -42,12 +43,14 @@ def update_task_status(id, status):
     if not is_admin() and task.performer == current_user.pk:
         abort(403)
 
-    if status <= len(STATUS_CHOICES):
+    try:
+        if status <= len(STATUS_CHOICES):
+            raise Exception
         task.status = status
         task.save()
-        flash("Task was updated")
-    else:
-        flash("Can't update task")
+        flash(TASK_UPDATED_MESSAGE)
+    except:
+        flash(TASK_EXCEPTION_MESSAGE)
 
     return render_template('core/tasks/task_info.html',
                            task=task, statuses=STATUS_CHOICES, title=task.name)
@@ -100,11 +103,11 @@ def add_task():
 
             try:
                 task.save()
-                flash('You have successfully added a new task.')
+                flash(TASK_ADDED_MESSAGE)
                 return redirect(url_for('task.get_task', id=task.pk))
             except Exception as e:
                 app.logger.error(str(e))
-                flash('Error: task already exists.')
+                flash(TASK_EXCEPTION_MESSAGE)
                 return redirect(url_for('task.list_tasks'))
 
         return render_template('core/tasks/task.html', action="Add", add_task=add_task,
@@ -145,10 +148,10 @@ def edit_task(id):
                 task.save()
             except Exception as e:
                 app.logger.error(str(e))
-                flash(str(e) + 'Error: task already exists.')
+                flash(TASK_EXCEPTION_MESSAGE)
                 return redirect(url_for('task.list_tasks'))
 
-            flash('You have successfully edited the task.')
+            flash(TASK_EDITED_MESSAGE)
             return redirect(url_for('task.get_task', id=task.pk))
 
         form.name.data = task.name
@@ -180,7 +183,7 @@ def delete_task(id):
             abort(404)
 
         task.delete()
-        flash('You have successfully deleted the task.')
+        flash(TASK_DELETED_MESSAGE)
 
         return redirect(url_for('task.list_tasks'))
 

@@ -10,7 +10,7 @@ from src.models.user import User
 from ..views import is_admin
 from mongoengine import Q
 from flask import current_app as app
-
+from src.common.messages import PROJECT_ADDED_MESSAGE, PROJECT_DELETED_MESSAGE, PROJECT_EDITED_MESSAGE, PROJECT_EXCEPTION_MESSAGE
 
 # Get all projects
 @project.route('/projects')
@@ -75,13 +75,13 @@ def add_project():
 
                 for user_pk in form.participants.data:
                     User.objects(pk=user_pk).update_one(set__project=new_project.pk)
-                flash('You have successfully added a new project.')
+                flash(PROJECT_ADDED_MESSAGE)
                 return redirect(url_for('project.get_project', id=new_project.pk))
             # TODO: Remove this shitty warning
             except Exception as e:
                 # TODO: make normal messages
                 app.logger.error(str(e))
-                flash('Error: project already exists.')
+                flash(PROJECT_EXCEPTION_MESSAGE)
 
                 return redirect(url_for('project.list_projects', id=new_project.pk))
 
@@ -118,11 +118,11 @@ def edit_project(id):
 
                 User.objects(pk__in=form.participants.raw_data).update(project=project.pk)
 
-                flash('You have successfully edited the project.')
+                flash(PROJECT_EDITED_MESSAGE)
                 return redirect(url_for('project.get_project', id=project.pk))
             except Exception as e:
                 app.logger.error(str(e))
-                flash(str(e) + 'smth goes wrong')
+                flash(PROJECT_EXCEPTION_MESSAGE)
 
                 return redirect(url_for('project.list_projects'))
 
@@ -161,7 +161,7 @@ def delete_project(id):
             user.save()
 
         project.delete()
-        flash('You have successfully deleted the project.')
+        flash(PROJECT_DELETED_MESSAGE)
 
         return redirect(url_for('project.list_projects'))
 

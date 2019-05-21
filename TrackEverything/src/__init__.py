@@ -7,6 +7,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 from time import strftime
 import traceback
+from src.common.messages import NOT_HAVE_PERMITIONS_MESSAGE
+from src.common.validation import LOGGING_DATE_FORMAT
 
 db = MongoEngine()
 login_manager = LoginManager()
@@ -26,7 +28,7 @@ def create_app(config_name):
     db.init_app(app)
 
     login_manager.init_app(app)
-    login_manager.login_message = "You must be logged in to access this page."
+    login_manager.login_message = NOT_HAVE_PERMITIONS_MESSAGE
     login_manager.login_view = "auth.login"
 
     from .auth import auth as auth_blueprint
@@ -58,7 +60,7 @@ def create_app(config_name):
 
     @app.after_request
     def after_request(response):
-        timestamp = strftime('[%Y-%b-%d %H:%M]')
+        timestamp = strftime(LOGGING_DATE_FORMAT)
         logger.info('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme,
                      request.full_path, response.status)
 
@@ -66,7 +68,7 @@ def create_app(config_name):
 
     @app.errorhandler(Exception)
     def exceptions(error):
-        timestamp = strftime('[%Y-%b-%d %H:%M]')
+        timestamp = strftime(LOGGING_DATE_FORMAT)
         trace = traceback.format_exc()
         status_code = getattr(error, 'status_code', 400)
         response_dict = dict(getattr(error, 'payload', None) or ())
