@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_mongoengine import MongoEngine
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
@@ -19,7 +19,7 @@ def create_app(config_name):
 
     handler = RotatingFileHandler('app.log', maxBytes=1000000, backupCount=3)
     logger = logging.getLogger('tdm')
-    logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.INFO)
     logger.addHandler(handler)
 
     Bootstrap(app)
@@ -59,17 +59,23 @@ def create_app(config_name):
     @app.after_request
     def after_request(response):
         timestamp = strftime('[%Y-%b-%d %H:%M]')
-        logger.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme,
+        logger.info('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme,
                      request.full_path, response.status)
 
         return response
 
     @app.errorhandler(Exception)
-    def exceptions(e):
-        tb = traceback.format_exc()
+    def exceptions(error):
         timestamp = strftime('[%Y-%b-%d %H:%M]')
-        logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method,
-                     request.scheme, request.full_path, tb)
-        return e.status_code
+        trace = traceback.format_exc()
+        status_code = getattr(error, 'status_code', 400)
+        response_dict = dict(getattr(error, 'payload', None) or ())
+        response_dict['message'] = getattr(error, 'message', None)
+        response_dict['traceback'] = trace
 
+        response = jsonify(response_dict)
+        response.status_code = status_code
+        logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method,
+                     request.scheme, request.full_path, trace)
+        return response
     return app
