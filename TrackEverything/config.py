@@ -17,6 +17,7 @@ class ProductionConfig(Config):
 class TestConfig(Config):
     TESTING = True
     MONGODB_HOST = 'mongodb://localhost:27017/test'
+    WTF_CSRF_ENABLED = False
 
 
 app_config = {

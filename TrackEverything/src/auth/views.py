@@ -3,6 +3,7 @@ from flask_login import login_required, login_user, logout_user
 from . import auth
 from .forms import LoginForm, RegistrationForm
 from src.models.user import User
+from src.common.messages import LOGIN_FAILURE_MESSAGE, LOGIN_SUCCESS_MESSAGE, LOGOUT_MESSAGE, ACCOUNT_BANNED_MESSAGE, REGISTER_SUCCESS_MESSAGE
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -20,7 +21,7 @@ def register():
             user.password = form.password.data
             user.save()
 
-            flash('You have successfully registered! You may now login.')
+            flash(REGISTER_SUCCESS_MESSAGE)
             return redirect(url_for('auth.login'))
         except Exception as e:
             pass
@@ -36,12 +37,12 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             if not user.status == 2:
                 login_user(user)
-                flash("You're successfully logged in")
+                flash(LOGIN_SUCCESS_MESSAGE)
                 return redirect(url_for('core.index'))
             else:
-                flash('Sorry, but your account is banned')
+                flash(ACCOUNT_BANNED_MESSAGE)
         else:
-            flash('Invalid email or password.')
+            flash(LOGIN_FAILURE_MESSAGE)
 
     return render_template('auth/login.html', form=form, title='Login')
 
@@ -50,5 +51,5 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have successfully been logged out.')
+    flash(LOGOUT_MESSAGE)
     return redirect(url_for('auth.login'))

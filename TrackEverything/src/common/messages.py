@@ -19,7 +19,7 @@ PROJECT_DELETED_MESSAGE = 'You have successfully deleted the project.'
 TASK_ADDED_MESSAGE = 'You have successfully added a new task.'
 TASK_EDITED_MESSAGE = 'You have successfully edited the task.'
 TASK_DELETED_MESSAGE = 'You have successfully deleted the task.'
-TASK_UPDATED_MESSAGE = "You have successfully updated task status"
+TASK_UPDATED_MESSAGE = "You have successfully updated task status."
 USER_EDITED_MESSAGE = 'You have successfuly edited the user.'
 USER_BANNED_MESSAGE = 'User banned.'
 USER_RESTORED_MESSAGE = 'User restored.'
@@ -31,3 +31,8 @@ USER_EXCEPTION_MESSAGE = "Server error: Can't process user request."
 
 # AUTH
 NOT_HAVE_PERMITIONS_MESSAGE = "You must be logged in to access this page."
+REGISTER_SUCCESS_MESSAGE = 'You have successfully registered! You may now login.'
+LOGIN_SUCCESS_MESSAGE = "You're successfully logged in."
+LOGIN_FAILURE_MESSAGE = 'Invalid email or password.'
+ACCOUNT_BANNED_MESSAGE = 'Sorry, but your account is banned.'
+LOGOUT_MESSAGE = 'You have successfully been logged out.'
