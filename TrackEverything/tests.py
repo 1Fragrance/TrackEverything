@@ -126,7 +126,6 @@ class TestErrorPages(TestBase):
         self.assertEqual(response.status_code, 500)
 
 class TestAPI(TestBase):
-    
     def login_admin(self):
         return self.client.post(url_for('auth.login'), data={'email': 'admin@admin.com',
                                              'password': '123'}, follow_redirects=True)
@@ -183,28 +182,70 @@ class TestAPI(TestBase):
     def test_add_task(self):
         with self.client:
             assert self.login_admin().status_code == 200
-            task = Task(name='test', status=2, description='descr', start_date=datetime.now())
-            form = TaskForm(formdata=None, obj=task)
-            result = self.client.post(url_for('task.add_task'), data=form.data, follow_redirects=True)
-            print(result.data)
+            result = self.client.post(url_for('task.add_task'), data={'name':'test', 'status':2, 'description':'description', 'start_date':datetime.now().strftime('%Y-%m-%d')},follow_redirects=True)
             self.assertEqual(result.status_code, 200)
             assert Task.objects(name='test').first() is not None
 
     def test_edit_task(self):
         with self.client:
             assert self.login_admin().status_code == 200
-            task = Task(name='test', status=2, description='descr', start_date=datetime.now())
-            form = TaskForm(formdata=None, obj=task)
-            result = self.client.post(url_for('task.add_task'), data=form.data, follow_redirects=True)
+            result = self.client.post(url_for('task.add_task'), data={'name':'test', 'status':2, 'description':'description', 'start_date':datetime.now().strftime('%Y-%m-%d')},follow_redirects=True)
             self.assertEqual(result.status_code, 200)
+            assert Task.objects(name='test').first() is not None
 
-            task_db = Task.objects(name='test').first()
-            assert task_db is not None
-            task_db.name='new_name'
-            form = TaskForm(formdata=None, obj=task_db)
-            result = self.client.post(url_for('task.edit_task'), data=form.data, follow_redirects=True)
+            task = Task.objects(name='test').first()
+            result = self.client.post(url_for('task.edit_task', id=task.pk), data={'name':'new_name', 'status':2, 'description':'description', 'start_date':datetime.now().strftime('%Y-%m-%d')},follow_redirects=True)
+            
             self.assertEqual(result.status_code, 200)
             assert Task.objects(name='new_name').first() is not None
+
+    def test_edit_user(self):
+        with self.client:
+            assert self.login_admin().status_code == 200
+            client = User.objects(email='client@client.com').first()
+            assert client is not None
+
+            result = self.client.post(url_for('user.edit_user', id=client.pk), data={'email':'test@email.com', 'username': 'Username', 'first_name':'first', 'last_name':'second', 'patronymic': 'ptrnmc', 'position': 1},follow_redirects=True)
+            self.assertEqual(result.status_code, 200)
+            assert User.objects(email='test@email.com').first() is not None
+
+    def test_ban__restore_user(self):
+        with self.client:
+            assert self.login_admin().status_code == 200
+            client = User.objects(email='client@client.com').first()
+            assert client is not None
+
+            result = self.client.post(url_for('user.ban_user', id=client.pk) ,follow_redirects=True)
+            self.assertEqual(result.status_code, 200)
+            updated_user = User.objects(email='client@client.com').first()
+            assert updated_user.status == 2
+
+            result = self.client.post(url_for('user.restore_user', id=client.pk) ,follow_redirects=True)
+            self.assertEqual(result.status_code, 200)
+            updated_user = User.objects(email='client@client.com').first()
+            assert updated_user.status == 1
+
+    def test_delete_task(self):
+        with self.client:
+            assert self.login_admin().status_code == 200
+            task = Task(name="Test_task", description="Test task description", status=2, start_date=datetime.utcnow)
+            task.save()
+
+            result = self.client.post(url_for('task.delete_task', id=task.pk) ,follow_redirects=True)
+            self.assertEqual(result.status_code, 200)
+            assert Task.objects(name="Test_task").first() is None
+
+    def test_delete_project(self):
+        with self.client:
+            assert self.login_admin().status_code == 200
+            project = Project(name="Test Project", short_name='Test project short_name', status=2,
+                          description="Test project description")
+            project.save()
+
+            result = self.client.post(url_for('project.delete_project', id=project.pk) ,follow_redirects=True)
+            self.assertEqual(result.status_code, 200)
+            assert Project.objects(name="Test Project").first() is None
+
 
 if __name__ == '__main__':
     unittest.main()

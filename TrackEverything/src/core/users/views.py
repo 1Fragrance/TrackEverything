@@ -81,7 +81,7 @@ def edit_user(id):
                 user.patronymic = form.patronymic.data
                 user.position = form.position.data
                 user.update_date = datetime.utcnow()
-                if form.project.data:
+                if form.project.raw_data:
                     user.project = ObjectId(form.project.data)
                 user.save()
 
