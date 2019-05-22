@@ -20,13 +20,13 @@ Client features:
 4. Change completion status of the task.
    
 
-Admin features:
+Admin features:  
 
-	1. Same features as the client.
- 	2. Create, edit and delete projects.
- 	3. Create, edit and delete tasks.
- 	4. Manage users information.
- 	5. Block and restore users accounts. 
+1. Same features as the client.
+2. Create, edit and delete projects.
+3. Create, edit and delete tasks.
+4. Manage users information.
+5. Block and restore users accounts. 
      
 
 ## Requirements
