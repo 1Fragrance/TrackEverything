@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, flash
+from flask import Flask, render_template, request
 from flask_mongoengine import MongoEngine
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
@@ -31,7 +31,7 @@ def create_app(config_name):
     login_manager.login_message = NOT_HAVE_PERMITIONS_MESSAGE
     login_manager.login_view = "auth.login"
 
-    from .auth import auth as auth_blueprint
+    from .core.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
     from .core import core as core_blueprint
