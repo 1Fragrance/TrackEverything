@@ -6,7 +6,26 @@ Simplify your project management
 
 ## About
 
-Track everything is a web application written in Python Flask. It is a task-tracking application that can help project managers to manage their work on the project with users. Also it can help regular developers to check out tasks which was assigned to them. 
+Track Everything is a web application written in Python Flask. It is a task-tracking application that can help project managers to manage their work on the project with users. Also it can help regular developers to check out tasks which was assigned to them. 
+
+
+
+## Features
+
+Client features:
+
+1. User registration system.
+2. Browse all projects in the system.
+3. Browse all tasks which was assigned to user.
+4. Change completion status of the task.
+
+Admin features:
+
+	1. Same features as the client.
+ 	2. Create, edit and delete projects.
+ 	3. Create, edit and delete tasks.
+ 	4. Manage users information.
+ 	5. Block and restore users accounts. 
 
 
 
