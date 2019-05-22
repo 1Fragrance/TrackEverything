@@ -1,11 +1,11 @@
 # Validation
 INCORRECT_LENGTH_MESSAGE = 'Incorrect length.'
-ONLY_LETTERS_MESSAGE = 'Only latin letters.'
+ONLY_LETTERS_MESSAGE = 'Only letters allowed.'
+ONLY_NUMBERS_AND_LETTERS_MESSAGE = 'Only letters and numbers are allowed'
 EMAIL_EXIST_MESSAGE = 'Email is already in use.'
 USERNAME_EXIST_MESSAGE = 'Username is already in use.'
 PROJECT_NAME_EXIST_MESSAGE = 'Project name is already in use.'
 SHORT_NAME_EXIST_MESSAGE = 'Short name is already in use.'
-START_DATE_LESS_THAN_TODAY_MESSAGE = 'Start date cannot be less than today.'
 START_DATE_LESS_THAN_END_MESSAGE = 'Start date have to be less than end date.'
 
 # Flash

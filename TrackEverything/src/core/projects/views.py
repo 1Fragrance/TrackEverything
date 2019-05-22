@@ -1,16 +1,24 @@
 from datetime import datetime
-from . import project
-from flask import abort, flash, redirect, render_template, url_for, jsonify, request
-from flask_login import login_required
-from .forms import ProjectForm
-from src.models import STATUS_CHOICES
-from src.models.task import Task
-from src.models.project import Project
-from src.models.user import User
-from ..views import is_admin
-from mongoengine import Q
+
+from flask import abort
 from flask import current_app as app
-from src.common.messages import PROJECT_ADDED_MESSAGE, PROJECT_DELETED_MESSAGE, PROJECT_EDITED_MESSAGE, PROJECT_EXCEPTION_MESSAGE
+from flask import flash, jsonify, redirect, render_template, request, url_for
+from flask_login import login_required
+from mongoengine import Q
+
+from src.common.messages import (PROJECT_ADDED_MESSAGE,
+                                 PROJECT_DELETED_MESSAGE,
+                                 PROJECT_EDITED_MESSAGE,
+                                 PROJECT_EXCEPTION_MESSAGE)
+from src.models import STATUS_CHOICES
+from src.models.project import Project
+from src.models.task import Task
+from src.models.user import User
+
+from ..views import is_admin
+from . import project
+from .forms import ProjectForm
+
 
 # Get all projects
 @project.route('/projects')
@@ -43,14 +51,16 @@ def get_project(id):
 
 # Get users without project from DB
 def fill_free_users(form):
-    users_names = User.objects(Q(project__exists=False)).values_list('pk', 'username')
+    users_names = User.objects(
+        Q(project__exists=False)).values_list('pk', 'username')
     for user in users_names:
         form.participants.choices.append((user[0], user[1]))
 
 
 # Get users without project & relative to project from DB
 def fill_free_and_relative_users(form, project_id):
-    users_names = User.objects(Q(project=project_id) | Q(project__exists=False)).values_list('pk', 'username')
+    users_names = User.objects(Q(project=project_id) | Q(
+        project__exists=False)).values_list('pk', 'username')
     for user in users_names:
         form.participants.choices.append((user[0], user[1]))
 
@@ -74,7 +84,8 @@ def add_project():
                 new_project.save()
 
                 for user_pk in form.participants.data:
-                    User.objects(pk=user_pk).update_one(set__project=new_project.pk)
+                    User.objects(pk=user_pk).update_one(
+                        set__project=new_project.pk)
                 flash(PROJECT_ADDED_MESSAGE)
                 return redirect(url_for('project.get_project', id=new_project.pk))
             # TODO: Remove this shitty warning
@@ -116,7 +127,8 @@ def edit_project(id):
                 for old_user in User.objects(project=project.pk):
                     old_user.update(unset__project=1)
 
-                User.objects(pk__in=form.participants.raw_data).update(project=project.pk)
+                User.objects(pk__in=form.participants.raw_data).update(
+                    project=project.pk)
 
                 flash(PROJECT_EDITED_MESSAGE)
                 return redirect(url_for('project.get_project', id=project.pk))

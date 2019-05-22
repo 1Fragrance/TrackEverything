@@ -1,16 +1,22 @@
-from . import task
 from datetime import datetime
-from flask import abort, flash, redirect, render_template, url_for, request
-from flask_login import current_user, login_required
-from .forms import TaskForm
-from src.models import STATUS_CHOICES
-from src.models.task import Task
-from src.models.project import Project
-from src.models.user import User
-from ..views import is_admin
+
 from bson import ObjectId
+from flask import abort
 from flask import current_app as app
-from src.common.messages import TASK_ADDED_MESSAGE, TASK_DELETED_MESSAGE, TASK_EDITED_MESSAGE, TASK_EXCEPTION_MESSAGE, TASK_UPDATED_MESSAGE
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
+
+from src.common.messages import (TASK_ADDED_MESSAGE, TASK_DELETED_MESSAGE,
+                                 TASK_EDITED_MESSAGE, TASK_EXCEPTION_MESSAGE,
+                                 TASK_UPDATED_MESSAGE)
+from src.models import STATUS_CHOICES
+from src.models.project import Project
+from src.models.task import Task
+from src.models.user import User
+
+from ..views import is_admin
+from . import task
+from .forms import TaskForm
 
 
 # Get all tasks
@@ -70,7 +76,8 @@ def fill_projects_and_users(form, id=None):
     else:
         if id is None:
             id = project_names[0][0]
-        selected_project_performers = User.objects(project=id).values_list('pk', 'username')
+        selected_project_performers = User.objects(
+            project=id).values_list('pk', 'username')
 
     for project in project_names:
         form.project.choices.append((str(project[0]), project[1]))
@@ -127,7 +134,8 @@ def edit_task(id):
 
         add_task = False
         form = TaskForm(obj=task)
-        fill_projects_and_users(form, task.project.pk if task.project else None)
+        fill_projects_and_users(
+            form, task.project.pk if task.project else None)
 
         if request.method == 'POST' and form.validate_on_submit():
             task.name = form.name.data
@@ -186,4 +194,3 @@ def delete_task(id):
         flash(TASK_DELETED_MESSAGE)
 
         return redirect(url_for('task.list_tasks'))
-

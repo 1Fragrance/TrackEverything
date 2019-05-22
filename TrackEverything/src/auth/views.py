@@ -1,9 +1,13 @@
 from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user
+
+from src.common.messages import (ACCOUNT_BANNED_MESSAGE, LOGIN_FAILURE_MESSAGE,
+                                 LOGIN_SUCCESS_MESSAGE, LOGOUT_MESSAGE,
+                                 REGISTER_SUCCESS_MESSAGE)
+from src.models.user import User
+
 from . import auth
 from .forms import LoginForm, RegistrationForm
-from src.models.user import User
-from src.common.messages import LOGIN_FAILURE_MESSAGE, LOGIN_SUCCESS_MESSAGE, LOGOUT_MESSAGE, ACCOUNT_BANNED_MESSAGE, REGISTER_SUCCESS_MESSAGE
 
 
 @auth.route('/register', methods=['GET', 'POST'])

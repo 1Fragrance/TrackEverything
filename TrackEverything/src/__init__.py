@@ -62,7 +62,7 @@ def create_app(config_name):
     def after_request(response):
         timestamp = strftime(LOGGING_DATE_FORMAT)
         logger.info('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme,
-                     request.full_path, response.status)
+                    request.full_path, response.status)
 
         return response
 

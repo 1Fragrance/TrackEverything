@@ -1,16 +1,21 @@
-from . import user
-from flask import abort, flash, redirect, render_template, url_for, request
-from flask_login import current_user, login_required
-from .forms import UserAssignForm
-from src.models import USER_STATUS_CHOICES, POSITION_CHOICES
-from src.models.user import User
-from src.models.task import Task
-from src.models.project import Project
-from ..views import is_admin
-from bson import ObjectId
-from flask import current_app as app
 from datetime import datetime
-from src.common.messages import USER_BANNED_MESSAGE, USER_EDITED_MESSAGE, USER_EXCEPTION_MESSAGE, USER_RESTORED_MESSAGE
+
+from bson import ObjectId
+from flask import abort
+from flask import current_app as app
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
+
+from src.common.messages import (USER_BANNED_MESSAGE, USER_EDITED_MESSAGE,
+                                 USER_EXCEPTION_MESSAGE, USER_RESTORED_MESSAGE)
+from src.models import POSITION_CHOICES, USER_STATUS_CHOICES
+from src.models.project import Project
+from src.models.task import Task
+from src.models.user import User
+
+from ..views import is_admin
+from . import user
+from .forms import UserAssignForm
 
 
 def fill_form_project_and_tasks(form):
@@ -21,7 +26,8 @@ def fill_form_project_and_tasks(form):
             form.project.choices.append((project[0], project[1]))
 
         selected_project = projects[0][0]
-        project_tasks = Task.objects(project=selected_project).values_list('pk', 'name')
+        project_tasks = Task.objects(
+            project=selected_project).values_list('pk', 'name')
         for task in project_tasks:
             form.tasks.choices.append((task[0], task[1]))
 
@@ -56,8 +62,7 @@ def list_users():
     else:
         users = User.objects().all()
         return render_template('core/users/users.html',
-                               users=users, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES
-                               , title='Users')
+                               users=users, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES, title='Users')
 
 
 # Admin: change user project/tasks
@@ -88,7 +93,8 @@ def edit_user(id):
                 for old_task in Task.objects(performer=user.pk):
                     old_task.update(unset__performer=1)
 
-                Task.objects(pk__in=form.tasks.raw_data).update(performer=user.pk)
+                Task.objects(pk__in=form.tasks.raw_data).update(
+                    performer=user.pk)
 
                 flash(USER_EDITED_MESSAGE)
                 return redirect(url_for('user.get_user', id=user.pk))
