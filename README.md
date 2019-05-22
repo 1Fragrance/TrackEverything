@@ -18,6 +18,7 @@ Client features:
 2. Browse all projects in the system.
 3. Browse all tasks which was assigned to user.
 4. Change completion status of the task.
+   
 
 Admin features:
 
@@ -26,8 +27,7 @@ Admin features:
  	3. Create, edit and delete tasks.
  	4. Manage users information.
  	5. Block and restore users accounts. 
-
-
+     
 
 ## Requirements
 
