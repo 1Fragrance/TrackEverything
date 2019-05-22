@@ -14,21 +14,18 @@ from .forms import LoginForm, RegistrationForm
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        try:
-            user = User(email=form.email.data,
-                        first_name=form.first_name.data,
-                        last_name=form.last_name.data,
-                        patronymic=form.patronymic.data,
-                        username=form.username.data,
-                        position=form.position.data,
-                        status=1)
-            user.password = form.password.data
-            user.save()
+        user = User(email=form.email.data,
+                    first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    patronymic=form.patronymic.data,
+                    username=form.username.data,
+                    position=form.position.data,
+                    status=1)
+        user.password = form.password.data
+        user.save()
 
-            flash(REGISTER_SUCCESS_MESSAGE)
-            return redirect(url_for('auth.login'))
-        except Exception as e:
-            pass
+        flash(REGISTER_SUCCESS_MESSAGE)
+        return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form, title='Register')
 

@@ -24,11 +24,6 @@ USER_EDITED_MESSAGE = 'You have successfuly edited the user.'
 USER_BANNED_MESSAGE = 'User banned.'
 USER_RESTORED_MESSAGE = 'User restored.'
 
-# EXCEPTIONS
-PROJECT_EXCEPTION_MESSAGE = "Server error: Can't process project request."
-TASK_EXCEPTION_MESSAGE = "Server error: Can't process task request."
-USER_EXCEPTION_MESSAGE = "Server error: Can't process user request."
-
 # AUTH
 NOT_HAVE_PERMITIONS_MESSAGE = "You must be logged in to access this page."
 REGISTER_SUCCESS_MESSAGE = 'You have successfully registered! You may now login.'

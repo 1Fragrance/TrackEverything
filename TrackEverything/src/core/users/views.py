@@ -7,7 +7,7 @@ from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from src.common.messages import (USER_BANNED_MESSAGE, USER_EDITED_MESSAGE,
-                                 USER_EXCEPTION_MESSAGE, USER_RESTORED_MESSAGE)
+                                 USER_RESTORED_MESSAGE)
 from src.models import POSITION_CHOICES, USER_STATUS_CHOICES
 from src.models.project import Project
 from src.models.task import Task
@@ -78,30 +78,25 @@ def edit_user(id):
         fill_form_project_and_tasks(form)
 
         if request.method == 'POST' and form.validate_on_submit():
-            try:
-                user.username = form.username.data
-                user.email = form.email.data
-                user.first_name = form.first_name.data
-                user.last_name = form.last_name.data
-                user.patronymic = form.patronymic.data
-                user.position = form.position.data
-                user.update_date = datetime.utcnow()
-                if form.project.raw_data:
-                    user.project = ObjectId(form.project.data)
-                user.save()
+            user.username = form.username.data
+            user.email = form.email.data
+            user.first_name = form.first_name.data
+            user.last_name = form.last_name.data
+            user.patronymic = form.patronymic.data
+            user.position = form.position.data
+            user.update_date = datetime.utcnow()
+            if form.project.raw_data:
+                user.project = ObjectId(form.project.data)
+            user.save()
 
-                for old_task in Task.objects(performer=user.pk):
-                    old_task.update(unset__performer=1)
+            for old_task in Task.objects(performer=user.pk):
+                old_task.update(unset__performer=1)
 
-                Task.objects(pk__in=form.tasks.raw_data).update(
-                    performer=user.pk)
+            Task.objects(pk__in=form.tasks.raw_data).update(
+                performer=user.pk)
 
-                flash(USER_EDITED_MESSAGE)
-                return redirect(url_for('user.get_user', id=user.pk))
-            except Exception as e:
-                app.logger.error(str(e))
-                flash(USER_EXCEPTION_MESSAGE)
-                return redirect(url_for('user.list_users'))
+            flash(USER_EDITED_MESSAGE)
+            return redirect(url_for('user.get_user', id=user.pk))
 
         form.username = user.username
         form.email = user.email
@@ -133,6 +128,7 @@ def ban_user(id):
         if not user:
             abort(404)
         user.status = 2
+        ser.update_date = datetime.utcnow()
         user.save()
         flash(USER_BANNED_MESSAGE)
 
@@ -149,6 +145,7 @@ def restore_user(id):
         if not user:
             abort(404)
         user.status = 1
+        user.update_date = datetime.utcnow()
         user.save()
         flash(USER_RESTORED_MESSAGE)
 

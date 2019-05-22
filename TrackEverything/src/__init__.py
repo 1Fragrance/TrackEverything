@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, flash
 from flask_mongoengine import MongoEngine
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
@@ -70,14 +70,7 @@ def create_app(config_name):
     def exceptions(error):
         timestamp = strftime(LOGGING_DATE_FORMAT)
         trace = traceback.format_exc()
-        status_code = getattr(error, 'status_code', 400)
-        response_dict = dict(getattr(error, 'payload', None) or ())
-        response_dict['message'] = getattr(error, 'message', None)
-        response_dict['traceback'] = trace
-
-        response = jsonify(response_dict)
-        response.status_code = status_code
         logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method,
                      request.scheme, request.full_path, trace)
-        return response
+        return internal_server_error(error)
     return app

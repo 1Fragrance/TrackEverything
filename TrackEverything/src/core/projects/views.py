@@ -8,8 +8,7 @@ from mongoengine import Q
 
 from src.common.messages import (PROJECT_ADDED_MESSAGE,
                                  PROJECT_DELETED_MESSAGE,
-                                 PROJECT_EDITED_MESSAGE,
-                                 PROJECT_EXCEPTION_MESSAGE)
+                                 PROJECT_EDITED_MESSAGE)
 from src.models import STATUS_CHOICES
 from src.models.project import Project
 from src.models.task import Task
@@ -80,21 +79,13 @@ def add_project():
                                   short_name=form.short_name.data,
                                   description=form.description.data,
                                   status=form.status.data)
-            try:
-                new_project.save()
+            new_project.save()
 
-                for user_pk in form.participants.data:
-                    User.objects(pk=user_pk).update_one(
-                        set__project=new_project.pk)
+            for user_pk in form.participants.data:
+                User.objects(pk=user_pk).update_one(
+                    set__project=new_project.pk)
                 flash(PROJECT_ADDED_MESSAGE)
                 return redirect(url_for('project.get_project', id=new_project.pk))
-            # TODO: Remove this shitty warning
-            except Exception as e:
-                # TODO: make normal messages
-                app.logger.error(str(e))
-                flash(PROJECT_EXCEPTION_MESSAGE)
-
-                return redirect(url_for('project.list_projects', id=new_project.pk))
 
         return render_template('core/projects/project.html', add_project=add_project,
                                form=form, title='Add Project')
@@ -116,27 +107,21 @@ def edit_project(id):
         fill_free_and_relative_users(form, project.pk)
 
         if request.method == 'POST' and form.validate_on_submit():
-            try:
-                project.name = form.name.data
-                project.short_name = form.short_name.data
-                project.description = form.description.data
-                project.status = form.status.data
-                project.update_date = datetime.utcnow()
-                project.save()
+            project.name = form.name.data
+            project.short_name = form.short_name.data
+            project.description = form.description.data
+            project.status = form.status.data
+            project.update_date = datetime.utcnow()
+            project.save()
 
-                for old_user in User.objects(project=project.pk):
-                    old_user.update(unset__project=1)
+            for old_user in User.objects(project=project.pk):
+                old_user.update(unset__project=1)
 
-                User.objects(pk__in=form.participants.raw_data).update(
-                    project=project.pk)
+            User.objects(pk__in=form.participants.raw_data).update(
+                project=project.pk)
 
-                flash(PROJECT_EDITED_MESSAGE)
-                return redirect(url_for('project.get_project', id=project.pk))
-            except Exception as e:
-                app.logger.error(str(e))
-                flash(PROJECT_EXCEPTION_MESSAGE)
-
-                return redirect(url_for('project.list_projects'))
+            flash(PROJECT_EDITED_MESSAGE)
+            return redirect(url_for('project.get_project', id=project.pk))
 
         form.name.data = project.name
         form.short_name.data = project.short_name

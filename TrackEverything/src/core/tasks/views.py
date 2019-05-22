@@ -7,8 +7,7 @@ from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from src.common.messages import (TASK_ADDED_MESSAGE, TASK_DELETED_MESSAGE,
-                                 TASK_EDITED_MESSAGE, TASK_EXCEPTION_MESSAGE,
-                                 TASK_UPDATED_MESSAGE)
+                                 TASK_EDITED_MESSAGE, TASK_UPDATED_MESSAGE)
 from src.models import STATUS_CHOICES
 from src.models.project import Project
 from src.models.task import Task
@@ -48,15 +47,11 @@ def update_task_status(id, status):
 
     if not is_admin() and task.performer == current_user.pk:
         abort(403)
-
-    try:
         if status <= len(STATUS_CHOICES):
             raise Exception
         task.status = status
         task.save()
         flash(TASK_UPDATED_MESSAGE)
-    except:
-        flash(TASK_EXCEPTION_MESSAGE)
 
     return render_template('core/tasks/task_info.html',
                            task=task, statuses=STATUS_CHOICES, title=task.name)
@@ -108,14 +103,9 @@ def add_task():
             if form.project.raw_data:
                 task.project = ObjectId(form.project.data)
 
-            try:
-                task.save()
-                flash(TASK_ADDED_MESSAGE)
-                return redirect(url_for('task.get_task', id=task.pk))
-            except Exception as e:
-                app.logger.error(str(e))
-                flash(TASK_EXCEPTION_MESSAGE)
-                return redirect(url_for('task.list_tasks'))
+            task.save()
+            flash(TASK_ADDED_MESSAGE)
+            return redirect(url_for('task.get_task', id=task.pk))
 
         return render_template('core/tasks/task.html', action="Add", add_task=add_task,
                                form=form, title="Add Task")
@@ -152,12 +142,8 @@ def edit_task(id):
                 task.project = ObjectId(form.project.data)
             else:
                 task.project = None
-            try:
-                task.save()
-            except Exception as e:
-                app.logger.error(str(e))
-                flash(TASK_EXCEPTION_MESSAGE)
-                return redirect(url_for('task.list_tasks'))
+
+            task.save()    
 
             flash(TASK_EDITED_MESSAGE)
             return redirect(url_for('task.get_task', id=task.pk))
