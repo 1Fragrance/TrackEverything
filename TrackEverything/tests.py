@@ -207,7 +207,7 @@ class TestAPI(TestBase):
             task = Task.objects(name='test').first()
             result = self.client.post(url_for('task.edit_task', id=task.pk), data={
                                       'name': 'new_name', 'status': 2, 'description': 'description', 'start_date': datetime.now().strftime('%Y-%m-%d')}, follow_redirects=True)
-
+            print(result)
             self.assertEqual(result.status_code, 200)
             assert Task.objects(name='new_name').first() is not None
 
