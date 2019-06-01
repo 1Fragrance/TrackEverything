@@ -1,4 +1,7 @@
-# User's positions
+"""
+
+User's positions
+"""
 POSITION_CHOICES = (
     (1, 'None'),
     (2, 'Junior developer'),
@@ -11,14 +14,20 @@ POSITION_CHOICES = (
     (9, 'Director')
 )
 
-# Project/Task statuses
+"""
+
+Project/Task statuses
+"""
 STATUS_CHOICES = (
     (1, 'Not started'),
     (2, 'On work'),
     (3, 'Ended')
 )
 
-# User account statuses
+"""
+
+User account statuses
+"""
 USER_STATUS_CHOICES = (
     (1, 'Active'),
     (2, 'Banned')

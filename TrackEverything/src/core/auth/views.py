@@ -10,6 +10,10 @@ from . import auth
 from .forms import LoginForm, RegistrationForm
 
 
+"""
+
+User register endpoint
+"""
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -30,6 +34,10 @@ def register():
     return render_template('auth/register.html', form=form, title='Register')
 
 
+"""
+
+User login endpoint
+"""
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -48,6 +56,10 @@ def login():
     return render_template('auth/login.html', form=form, title='Login')
 
 
+"""
+
+User logout endpoint
+"""
 @auth.route('/logout')
 @login_required
 def logout():

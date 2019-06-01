@@ -17,7 +17,10 @@ from ..views import is_admin
 from . import user
 from .forms import UserAssignForm
 
+"""
 
+Fill form projects and tasks
+"""
 def fill_form_project_and_tasks(form):
     projects = Project.objects().values_list('pk', 'name')
 
@@ -32,7 +35,10 @@ def fill_form_project_and_tasks(form):
             form.tasks.choices.append((task[0], task[1]))
 
 
-# Show user info
+"""
+
+Show user info endpoint
+"""
 @user.route('/users/<string:id>')
 @login_required
 def get_user(id):
@@ -53,7 +59,10 @@ def get_user(id):
         abort(403)
 
 
-# Admin: Show all users
+"""
+
+Admin: Show all users endpoint
+"""
 @user.route('/users')
 @login_required
 def list_users():
@@ -65,7 +74,10 @@ def list_users():
                                users=users, positions=POSITION_CHOICES, user_statuses=USER_STATUS_CHOICES, title='Users')
 
 
-# Admin: change user project/tasks
+"""
+
+Admin: change user project/tasks
+"""
 @user.route('/users/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(id):
@@ -118,6 +130,10 @@ def edit_user(id):
         abort(403)
 
 
+"""
+
+Ban user endpoint
+"""
 @user.route('/users/ban/<string:id>', methods=['GET', 'POST'])
 @login_required
 def ban_user(id):
@@ -126,15 +142,19 @@ def ban_user(id):
     else:
         user = User.objects(pk=id).first()
         if not user:
-            abort(404)
+              abort(404)
         user.status = 2
-        ser.update_date = datetime.utcnow()
+        user.update_date = datetime.utcnow()
         user.save()
         flash(USER_BANNED_MESSAGE)
 
         return redirect(url_for('user.list_users'))
 
 
+"""
+
+Restore user endpoint
+"""
 @user.route('/users/restore/<string:id>', methods=['GET', 'POST'])
 @login_required
 def restore_user(id):

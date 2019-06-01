@@ -8,7 +8,10 @@ from src import db, login_manager
 from . import POSITION_CHOICES, USER_STATUS_CHOICES
 
 
-# User DB model
+"""
+
+User DB model
+"""
 class User(db.Document, UserMixin):
     first_name = db.StringField(max_length=255, required=True)
     last_name = db.StringField(max_length=255, required=True)
@@ -46,7 +49,10 @@ class User(db.Document, UserMixin):
     }
 
 
-# Override user loading
+"""
+
+Override user loading
+"""
 @login_manager.user_loader
 def load_user(user_id):
     user = User.objects(pk=user_id).first()

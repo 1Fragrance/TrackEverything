@@ -10,10 +10,10 @@ from src.common.validation import (MAX_STRING_LENGTH, MIN_STRING_LENGTH,
 from src.models import POSITION_CHOICES
 from src.models.user import User
 
-# Create user form
-# TODO: See core/tasks/forms.py
-
-
+"""
+Create user form
+ 
+"""
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(), Length(
         MIN_STRING_LENGTH, MAX_STRING_LENGTH, INCORRECT_LENGTH_MESSAGE)])
@@ -42,7 +42,10 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(USERNAME_EXIST_MESSAGE)
 
 
-# Login form
+"""
+Login form
+
+"""
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])

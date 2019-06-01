@@ -16,8 +16,10 @@ from src.models import STATUS_CHOICES
 from src.models.project import Project
 
 
-# Project view form
-# TODO: See tasks/forms.py
+"""
+
+Project view form
+"""
 class ProjectForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(MIN_STRING_LENGTH, MAX_STRING_LENGTH, INCORRECT_LENGTH_MESSAGE),
                                            Regexp(REGEX_NUMBERS_LETTERS, message=ONLY_NUMBERS_AND_LETTERS_MESSAGE)])

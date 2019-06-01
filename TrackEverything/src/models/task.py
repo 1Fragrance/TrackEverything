@@ -3,7 +3,10 @@ from src import db
 from . import STATUS_CHOICES
 
 
-# Task DB model
+"""
+
+Task DB model
+"""
 class Task(db.Document):
     name = db.StringField(max_length=255, required=True)
     description = db.StringField()

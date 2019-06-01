@@ -18,7 +18,10 @@ from . import task
 from .forms import TaskForm
 
 
-# Get all tasks
+"""
+Get all tasks endpoint
+
+"""
 @task.route('/tasks', methods=['GET'])
 @login_required
 def list_tasks():
@@ -27,6 +30,10 @@ def list_tasks():
                            tasks=task_list, statuses=STATUS_CHOICES, title="Tasks")
 
 
+"""
+Get task endpoint
+
+"""
 @task.route('/tasks/<string:id>', methods=['GET'])
 @login_required
 def get_task(id):
@@ -38,6 +45,10 @@ def get_task(id):
                            task=task, statuses=STATUS_CHOICES, title=task.name)
 
 
+"""
+
+Update task endpoint
+"""
 @task.route('/tasks/<string:id>/update/<int:status>', methods=['GET'])
 @login_required
 def update_task_status(id, status):
@@ -57,13 +68,20 @@ def update_task_status(id, status):
                            task=task, statuses=STATUS_CHOICES, title=task.name)
 
 
+"""
+
+Own task endpoint
+"""
 @task.route('/tasks/me', methods=['GET'])
 @login_required
 def users_tasks():
     tasks = Task.objects(performer=current_user.pk).select_related()
     return render_template('core/tasks/tasks.html', statuses=STATUS_CHOICES, tasks=tasks, title="My tasks")
 
+"""
 
+Fill form project and performers
+"""
 def fill_projects_and_users(form, id=None):
     project_names = Project.objects().values_list('pk', 'name')
     if not project_names:
@@ -81,7 +99,10 @@ def fill_projects_and_users(form, id=None):
         form.performer.choices.append((str(performer[0]), performer[1]))
 
 
-# Admin: create new task
+"""
+
+Admin: create new task endpoint
+"""
 @task.route('/tasks/add', methods=['GET', 'POST'])
 @login_required
 def add_task():
@@ -111,7 +132,10 @@ def add_task():
                                form=form, title="Add Task")
 
 
-# admin edit task
+"""
+
+Admin: edit task endpoint
+"""
 @task.route('/tasks/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_task(id):
@@ -165,7 +189,10 @@ def edit_task(id):
                                task=task, title="Edit Task")
 
 
-# Admin: delete task
+"""
+
+Admin: delete task endpoint
+"""
 @task.route('/tasks/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
 def delete_task(id):

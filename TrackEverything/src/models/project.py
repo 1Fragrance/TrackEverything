@@ -3,7 +3,10 @@ from src import db
 from . import STATUS_CHOICES
 
 
-# Project DB model
+"""
+
+Project DB model
+"""
 class Project(db.Document):
     name = db.StringField(max_length=255, required=True, unique=True)
     short_name = db.StringField(max_length=255, required=True, unique=True)

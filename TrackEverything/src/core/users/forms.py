@@ -16,6 +16,10 @@ from src.models.user import User
 from ..tasks.forms import NonValidatingSelectField
 
 
+"""
+
+User assign form
+"""
 class UserAssignForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(
         MIN_STRING_LENGTH, MAX_STRING_LENGTH, INCORRECT_LENGTH_MESSAGE), Regexp(REGEX_NUMBERS_LETTERS, message=ONLY_NUMBERS_AND_LETTERS_MESSAGE)])
