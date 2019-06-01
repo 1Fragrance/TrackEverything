@@ -23,3 +23,4 @@ This document contain description of application structure.
 * models - a package that contains the classes of all models used in application.
 * static/css - application static files.
 * templates - a folder containing the template to display the content of web pages
+* services - a package that contains special functionality of the project (Machine learning in our case).
