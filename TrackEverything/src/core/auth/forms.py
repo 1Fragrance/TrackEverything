@@ -4,11 +4,14 @@ from wtforms import (PasswordField, SelectField, StringField, SubmitField,
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 
 from src.common.messages import (EMAIL_EXIST_MESSAGE, INCORRECT_LENGTH_MESSAGE,
-                                 ONLY_LETTERS_MESSAGE, USERNAME_EXIST_MESSAGE)
+                                 ONLY_LETTERS_MESSAGE, USERNAME_EXIST_MESSAGE,
+                                 PASSWORD_TOO_SIMPLE_MESSAGE)
 from src.common.validation import (MAX_STRING_LENGTH, MIN_STRING_LENGTH,
                                    REGEX_LATIN_LETTERS)
 from src.models import POSITION_CHOICES
 from src.models.user import User
+from src import password_validator
+
 
 """
 Create user form
@@ -40,6 +43,10 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if User.objects(username=field.data):
             raise ValidationError(USERNAME_EXIST_MESSAGE)
+
+    def validate_password(self, field):
+        if not password_validator.validate_password(field.data):
+            raise ValidationError(PASSWORD_TOO_SIMPLE_MESSAGE)
 
 
 """

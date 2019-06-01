@@ -2,40 +2,60 @@ import numpy as np
 import random
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
 
-def getTokens(inputString):
-    tokens = []
-    for i in inputString:
-        tokens.append(i)
-    return tokens
+# Parse every symbol
+def get_tokens(inputString):
+        tokens = []
+        for i in inputString:
+            tokens.append(i)
+        return tokens
+
+# Verctorizer
+vectorizer = TfidfVectorizer(tokenizer=get_tokens)
+
+# Logistic regression classifier
+lgs = LogisticRegression(penalty='l2', multi_class='ovr')
 
 
-filepath = '.data_set.csv'  # path for password file
-data = pd.read_csv(filepath, ',', error_bad_lines=False)
+class PasswordValidator():
+    def teach(self):
+        # TODO: Move to config
+        filepath = "data_set.csv"
+        data = pd.read_csv(filepath, ',', error_bad_lines=False)
 
-data = pd.DataFrame(data)
-passwords = np.array(data)
+        data = pd.DataFrame(data)
+        data = data.dropna()
 
-random.shuffle(passwords)  # shuffling randomly for robustness
-y = [d[1] for d in passwords]  # labels
-allpasswords = [d[0] for d in passwords]  # actual passwords
+        passwords = np.array(data)
 
-vectorizer = TfidfVectorizer(tokenizer=getTokens)  # vectorizing
-X = vectorizer.fit_transform(allpasswords)
+        # Shuffling passwords for increasing chance of predict
+        random.shuffle(passwords)  
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)  # splitting
+        # Labels
+        y = [d[1] for d in passwords]  
 
-lgs = LogisticRegression(penalty='l2', multi_class='ovr')  # our logistic regression classifier
-lgs.fit(X_train, y_train)  # training
-print(lgs.score(X_test, y_test))  # testing
+        # Passwords
+        allpasswords = [d[0] for d in passwords]  
+      
+        X = vectorizer.fit_transform(allpasswords)
 
-# more testing
-X_predict = ['faizanahmad', 'faizanahmad123', 'faizanahmad##', 'ajd1348#28t**', 'ffffffffff', 'kuiqwasdi',
-             'uiquiuiiuiuiuiuiuiuiuiuiui', 'mynameisfaizan', 'mynameis123faizan#', 'faizan', '123456', 'abcdef']
-X_predict = vectorizer.transform(X_predict)
-y_Predict = lgs.predict(X_predict)
-print
-y_Predict
+        # Splitting
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+  
+        # Training
+        lgs.fit(X_train, y_train)
+
+    def validate_password(self, password):
+        raw_password=[password]
+        password_vector = vectorizer.transform(raw_password)
+        predict = lgs.predict(password_vector)
+        print(predict)
+        print(raw_password)
+
+        if predict < 1:
+            return False
+        else: 
+            return True

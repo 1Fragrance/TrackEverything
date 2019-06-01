@@ -7,6 +7,7 @@ USERNAME_EXIST_MESSAGE = 'Username is already in use.'
 PROJECT_NAME_EXIST_MESSAGE = 'Project name is already in use.'
 SHORT_NAME_EXIST_MESSAGE = 'Short name is already in use.'
 START_DATE_LESS_THAN_END_MESSAGE = 'Start date have to be less than end date.'
+PASSWORD_TOO_SIMPLE_MESSAGE = "Your password is very simple, please use letters, numbers and special symbols to create strong password."
 
 # Flash
 SUCCESS_REGISTER_MESSAGE = 'You have successfully registered! You may now login.'

@@ -9,10 +9,12 @@ from time import strftime
 import traceback
 from src.common.messages import NOT_HAVE_PERMITIONS_MESSAGE
 from src.common.validation import LOGGING_DATE_FORMAT
+from src.services.password_validator.password_validator import PasswordValidator
+
 
 db = MongoEngine()
 login_manager = LoginManager()
-
+password_validator = PasswordValidator()
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
@@ -73,4 +75,7 @@ def create_app(config_name):
         logger.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method,
                      request.scheme, request.full_path, trace)
         return internal_server_error(error)
+
+    password_validator.teach()
+
     return app
