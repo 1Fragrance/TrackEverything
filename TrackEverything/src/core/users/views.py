@@ -126,12 +126,12 @@ def ban_user(id):
     else:
         user = User.objects(pk=id).first()
         if not user:
-            abort(404)
+              abort(404)
         user.status = 2
-        ser.update_date = datetime.utcnow()
+        user.update_date = datetime.utcnow()
         user.save()
         flash(USER_BANNED_MESSAGE)
-
+        
         return redirect(url_for('user.list_users'))
 
 

@@ -12,8 +12,8 @@ from src.core.tasks.forms import TaskForm
 from bson import ObjectId
 
 
+# TODO: Fix config
 class TestBase(TestCase):
-    # TODO: Move config_name to config_file
     def create_app(self):
         config_name = 'testing'
         app = create_app(config_name)
@@ -21,19 +21,18 @@ class TestBase(TestCase):
 
     # Before test
     def setUp(self):
-        admin = User(first_name="admin_first_name", last_name="admin_last_name", email='admin@admin.com',
-                     position=8, username="admin", is_admin=True, status=1)
-        admin.password = "123"
+        if not User.objects(username="admin"):
+            admin = User(first_name="admin_first_name", last_name="admin_last_name", email='admin@admin.com',
+                        position=8, username="admin", is_admin=True, status=1)
+            admin.password = "123"
+            admin.save()
 
-        user = User(first_name="client_first_name", last_name="client_last_name", email='client@client.com',
-                    position=1, username="client", is_admin=False, status=1)
-        user.password = "123"
-
-        admin.save()
-        user.save()
+            user = User(first_name="client_first_name", last_name="client_last_name", email='client@client.com',
+                        position=1, username="client", is_admin=False, status=1)
+            user.password = "123"
+            user.save()
 
     # After test
-    # TODO: Move db-name to config
     def tearDown(self):
         db.connection.drop_database('test')
 
@@ -202,14 +201,13 @@ class TestAPI(TestBase):
             result = self.client.post(url_for('task.add_task'), data={
                                       'name': 'test', 'status': 2, 'description': 'description', 'start_date': datetime.now().strftime('%Y-%m-%d')}, follow_redirects=True)
             self.assertEqual(result.status_code, 200)
-            assert Task.objects(name='test').first() is not None
 
             task = Task.objects(name='test').first()
+            assert task is not None
             result = self.client.post(url_for('task.edit_task', id=task.pk), data={
-                                      'name': 'new_name', 'status': 2, 'description': 'description', 'start_date': datetime.now().strftime('%Y-%m-%d')}, follow_redirects=True)
-
+                                      'name': 'newName', 'status': 2, 'description': 'description', 'start_date': datetime.now().strftime('%Y-%m-%d')}, follow_redirects=True)
             self.assertEqual(result.status_code, 200)
-            assert Task.objects(name='new_name').first() is not None
+            assert Task.objects(name='newName').first() is not None
 
     def test_edit_user(self):
         with self.client:
@@ -222,14 +220,13 @@ class TestAPI(TestBase):
             self.assertEqual(result.status_code, 200)
             assert User.objects(email='test@email.com').first() is not None
 
-    def test_ban__restore_user(self):
+    def test_ban_restore_user(self):
         with self.client:
             assert self.login_admin().status_code == 200
             client = User.objects(email='client@client.com').first()
             assert client is not None
 
-            result = self.client.post(
-                url_for('user.ban_user', id=client.pk), follow_redirects=True)
+            result = self.client.post(url_for('user.ban_user', id=client.pk), follow_redirects=True)
             self.assertEqual(result.status_code, 200)
             updated_user = User.objects(email='client@client.com').first()
             assert updated_user.status == 2

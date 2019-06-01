@@ -11,9 +11,6 @@ from src.models import POSITION_CHOICES
 from src.models.user import User
 
 # Create user form
-# TODO: See core/tasks/forms.py
-
-
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(), Length(
         MIN_STRING_LENGTH, MAX_STRING_LENGTH, INCORRECT_LENGTH_MESSAGE)])
