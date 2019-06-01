@@ -19,7 +19,10 @@ from . import project
 from .forms import ProjectForm
 
 
-# Get all projects
+"""
+Get all projects endpoint
+
+"""
 @project.route('/projects')
 @login_required
 def list_projects():
@@ -27,7 +30,10 @@ def list_projects():
     return render_template('core/projects/projects.html',
                            projects=projects, statuses=STATUS_CHOICES, title='Projects')
 
-# Get project
+"""
+Get project endpoint
+
+"""
 @project.route('/projects/<string:id>')
 @login_required
 def get_project(id):
@@ -48,7 +54,10 @@ def get_project(id):
                            project=project, statuses=STATUS_CHOICES, title=project.name)
 
 
-# Get users without project from DB
+"""
+Get users without project from DB endpoint
+
+"""
 def fill_free_users(form):
     users_names = User.objects(
         Q(project__exists=False)).values_list('pk', 'username')
@@ -56,7 +65,10 @@ def fill_free_users(form):
         form.participants.choices.append((user[0], user[1]))
 
 
-# Get users without project & relative to project from DB
+"""
+Get users without project & relative to project from DB 
+
+"""
 def fill_free_and_relative_users(form, project_id):
     users_names = User.objects(Q(project=project_id) | Q(
         project__exists=False)).values_list('pk', 'username')
@@ -64,7 +76,10 @@ def fill_free_and_relative_users(form, project_id):
         form.participants.choices.append((user[0], user[1]))
 
 
-# Admin: add new project
+"""
+Admin: add new project endpoint
+
+"""
 @project.route('/projects/add', methods=['GET', 'POST'])
 @login_required
 def add_project():
@@ -91,7 +106,10 @@ def add_project():
                                form=form, title='Add Project')
 
 
-# Admin: Edit project
+"""
+Admin: Edit project endpoint
+
+"""
 @project.route('/projects/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(id):
@@ -136,7 +154,10 @@ def edit_project(id):
                                form=form, title="Edit Project")
 
 
-# Admin: delete project
+"""
+Admin: delete project endpoint
+
+"""
 @project.route('/projects/delete/<string:id>', methods=['GET', 'POST'])
 @login_required
 def delete_project(id):
@@ -164,7 +185,10 @@ def delete_project(id):
 
 
 # API Part
-# Get project tasks
+"""
+Get project tasks endpoint
+
+"""
 @project.route('/projects/<project_id>/tasks')
 @login_required
 def get_project_tasks(project_id):
@@ -179,7 +203,10 @@ def get_project_tasks(project_id):
     return jsonify({'tasks': tasks_array})
 
 
-# Get project participants
+"""
+Get project participants endpoint
+
+"""
 @project.route('/projects/<project_id>/users')
 @login_required
 def get_project_users(project_id):

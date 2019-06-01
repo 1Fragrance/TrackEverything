@@ -14,14 +14,20 @@ from src.common.validation import (DATE_FORMAT, MAX_STRING_LENGTH,
                                    REGEX_NUMBERS_LETTERS)
 from src.models import STATUS_CHOICES
 
+"""
+Select Field class without validation 
 
+"""
 class NonValidatingSelectField(SelectField):
     def pre_validate(self, form):
         """pre_validation is disabled"""
         pass
 
 
-# Task view form
+"""
+Task view form
+
+"""
 class TaskForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(MIN_STRING_LENGTH, MAX_STRING_LENGTH, INCORRECT_LENGTH_MESSAGE),
                                            Regexp(REGEX_NUMBERS_LETTERS, message=ONLY_NUMBERS_AND_LETTERS_MESSAGE)])
