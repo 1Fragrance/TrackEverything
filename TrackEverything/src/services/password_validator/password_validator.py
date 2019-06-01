@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-
+import warnings
 
 # Parse every symbol
 def get_tokens(inputString):
@@ -24,7 +24,7 @@ class PasswordValidator():
     def teach(self):
         # TODO: Move to config
         filepath = "data_set.csv"
-        data = pd.read_csv(filepath, ',', error_bad_lines=False)
+        data = pd.read_csv(filepath, ',', error_bad_lines=False, warn_bad_lines=False)
 
         data = pd.DataFrame(data)
         data = data.dropna()
@@ -39,7 +39,6 @@ class PasswordValidator():
 
         # Passwords
         allpasswords = [d[0] for d in passwords]  
-      
         X = vectorizer.fit_transform(allpasswords)
 
         # Splitting
