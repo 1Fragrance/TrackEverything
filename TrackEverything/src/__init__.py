@@ -76,6 +76,6 @@ def create_app(config_name):
                      request.scheme, request.full_path, trace)
         return internal_server_error(error)
 
-    password_validator.teach()
+    #password_validator.teach()
 
     return app
